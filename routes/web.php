@@ -16,7 +16,7 @@ use App\Http\Controllers\AdminController;
 */
 
 Route::get('/', function () {
-    return redirect('/user.DashboardUser');
+    return redirect()->route('Beranda');
 });
 
 Route::get('/Login', [AdminController::class, 'ViewLogin'])->name('ViewLogin');
