@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('tbl_kabupaten', function (Blueprint $table) {
             $table->id();
             $table->string('nama_kabupaten');
-            $table->string('distributor_id');
             $table->string('latitude');
             $table->string('longitude');
             $table->string('gambar');
