@@ -9,12 +9,13 @@ class kabupaten extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'username', 'email', 'password', 'is_admin'
-    ];
+    protected $table = 'tbl_kabupaten';
 
-    protected $casts = [
-        'is_admin' => 'boolean',
+    protected $fillable = [
+        'nama_kabupaten',
+        'latitude',
+        'longitude',
+        'gambar',
     ];
 
 }

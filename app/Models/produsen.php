@@ -16,9 +16,18 @@ class produsen extends Model
 
 
     protected $fillable = [
-        'user_id', 'nama_distributor', 'no_hp', 'nama_pemilik', 'jenis_pangan',
-        'jenis_distributor', 'asal', 'tujuan_distribusi', 'alamat_distributor',
-        'wilayah_cakupan', 'latitude', 'longitude'
+        'user_id', 
+        'nama_distributor', 
+        'no_hp', 
+        'nama_pemilik', 
+        'jenis_pangan',
+        'jenis_distributor', 
+        'asal', 
+        'tujuan_distribusi', 
+        'alamat_distributor',
+        'wilayah_cakupan', 
+        'latitude', 
+        'longitude'
     ];
 
     public function user(): BelongsTo {

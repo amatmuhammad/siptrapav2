@@ -28,6 +28,13 @@ Route::get('/Node', [AdminController::class, 'Node'])->name('Node');
 Route::get('/Edge', [AdminController::class, 'Edge'])->name('Edge');
 Route::get('/Data-Produsen', [AdminController::class, 'produsen'])->name('produsen');
 Route::get('/Data-Pangan-Admin', [AdminController::class, 'panganadmin'])->name('panganadmin');
+Route::get('/Data-Kabupaten', [AdminController::class, 'kabupaten'])->name('kabupaten');
+Route::post('/Create-Kabupaten', [AdminController::class, 'createKabupaten'])->name('createKabupaten');
+Route::post('/Update-Kabupaten/{id}', [AdminController::class, 'updateKabupaten'])->name('updateKabupaten');
+Route::delete('/Delete-Kabupaten/{id}', [AdminController::class, 'destroyKabupaten'])->name('destroyKabupaten');
+Route::get('/Data-Nama-Pangan', [AdminController::class, 'namaPangan'])->name('namaPangan');
+Route::post('/Create-NamaPangan', [AdminController::class, 'createNamaPangan'])->name('createNamaPangan');
+Route::post('/Update-NamaPangan/{id}', [AdminController::class, 'updateNamaPangan'])->name('updateNamaPangan');
 
 // user
 Route::get('/Beranda', [UserController::class, 'Beranda'])->name('Beranda');

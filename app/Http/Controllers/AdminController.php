@@ -6,6 +6,8 @@ use App\Models\edges;
 use App\Models\nodes;
 use App\Models\pangan;
 use App\Models\produsen;
+use App\Models\kabupaten;
+use App\Models\namaPangan;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -118,5 +120,76 @@ class AdminController extends Controller
         $strapa = pangan::all();
 
         return view('admin.pangan', compact('strapa'));
+    }
+
+    public function kabupaten(){
+        $strapa = kabupaten::all();
+
+        return view('admin.kabupaten', compact('strapa'));
+    }
+
+    public function createKabupaten(Request $request){
+
+        $request->validate([
+            'nama_kabupaten' => 'required|string',
+            'latitude' => 'nullable',
+            'longitude' => 'nullable',
+            'gambar' => 'nullable',
+        ]);
+
+        kabupaten::create($request->all());
+        return redirect()->route('kabupaten')->with('success', 'Data Kabupaten berhasil ditambahkan');
+        // return view('admin.kabupaten');
+    }
+
+    public function updateKabupaten(Request $request, $id){
+
+        $request->validate([
+            'nama_kabupaten' => 'required|string',
+            'latitude' => 'nullable',
+            'longitude' => 'nullable',
+            'gambar' => 'nullable',
+        ]);
+
+        $kabupaten = kabupaten::findOrFail($id);
+        $kabupaten->update($request->all());
+        return redirect()->route('kabupaten')->with('success', 'Data Kabupaten Berhasil Di Update');
+        // return view('admin.kabupaten');
+    }
+
+    public function destroyKabupaten($id){
+        $kabupaten = kabupaten::findOrFail($id);
+        $kabupaten->delete();
+        return redirect()->route('kabupaten')->with('success', 'Data Kabupaten Berhasil Di hapus');
+    }
+
+    public function namaPangan(){
+        $strapa = namaPangan::all();
+
+        return view('admin.namaPangan', compact('strapa'));
+    }
+
+    public function createNamaPangan(Request $request){
+
+        $request->validate([
+            'nama_pangan' => 'required|string',
+        ]);
+
+        namaPangan::create($request->all());
+        return redirect()->route('namaPangan')->with('success', 'Nama Pangan berhasil ditambahkan');
+        // return view('admin.kabupaten');
+    }
+
+    public function updateNamaPangan(Request $request, $id){
+
+        // dd($request);
+         $request->validate([
+            'nama_pangan' => 'required|string',
+        ]);
+
+        $namaPangan = namaPangan::findOrFail($id);
+        $namaPangan->update($request->all());
+        return redirect()->route('namaPangan')->with('success', 'Nama Pangan Berhasil Di Update');
+        // return view('admin.kabupaten');
     }
 }

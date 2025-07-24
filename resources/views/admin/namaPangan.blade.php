@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('judul', 'Data Kabupaten')
+@section('judul', 'Data Nama Pangan')
 
 @section('konten')
 
@@ -31,7 +31,7 @@
     <div class="row mt-5">
         <div class="col">
             <div class="card">
-              <h3 class="card-header"><b>Data Kabupaten</b><hr style="border: 2px solid rgb(225, 225, 225);"></h3>
+              <h3 class="card-header"><b>Data Nama Pangan</b><hr style="border: 2px solid rgb(225, 225, 225);"></h3>
                 <div class="card-body">
                     <div class="row justify-content-between mb-5">
                       <div class="col d-flex align-items-center mb-3 mb-md-0">
@@ -57,7 +57,7 @@
                       <thead class="table-warning">
                         <tr class="text-center">
                             <th>No</th>
-                            <th>Nama Kabupaten</th>
+                            <th>Nama Pangan</th>
                             <th>Action</th>
                         </tr>
                       </thead>
@@ -66,7 +66,7 @@
                       @forelse ($strapa as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->nama_kabupaten }}</td>
+                            <td>{{ $item->nama_pangan }}</td>
                           <td>
                              <div>
                                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
@@ -138,11 +138,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="{{ route('createKabupaten') }}" method="POST">
+        <form action="{{ route('createNamaPangan') }}" method="POST">
           @csrf
           <div class="mb-3">
-            <label for="nama kabupaten" class="form-label">Nama Kabupaten</label>
-            <input type="text" class="form-control" name="nama_kabupaten" placeholder="Masukkan Nama Kabupaten">
+            <label for="nama pangan" class="form-label">Nama Pangan</label>
+            <input type="text" class="form-control" name="nama_pangan" placeholder="Masukkan Nama Pangan">
           </div>
         </div>
         <div class="modal-footer">
@@ -163,11 +163,11 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form action="{{ route('updateKabupaten', $item->id) }}" method="POST">
+          <form action="{{ route('updateNamaPangan', $item->id) }}" method="POST">
             @csrf
             <div class="mb-3">
-              <label for="nama kabupaten" class="form-label">Nama Kabupaten</label>
-              <input type="text" class="form-control" name="nama_kabupaten" placeholder="Masukkan Nama Kabupaten" value="{{ $item->nama_kabupaten }}">
+              <label for="nama kabupaten" class="form-label">Nama Pangan</label>
+              <input type="text" class="form-control" name="nama_pangan" placeholder="Masukkan Nama Pangan" value="{{ $item->nama_pangan }}">
             </div>
           </div>
           <div class="modal-footer">

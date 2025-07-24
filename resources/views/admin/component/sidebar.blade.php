@@ -41,14 +41,14 @@
                 <div class="text-truncate" data-i18n="Basic">Data Edge</div>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="#" class="menu-link">
+        <li class="menu-item {{ Request::is('Data-Kabupaten') ? 'active' : '' }}">
+            <a href="{{ route('kabupaten') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-current-location"></i>
                 <div class="text-truncate" data-i18n="Basic">Kabupaten</div>
             </a>
         </li>
-        <li class="menu-item ">
-            <a href="#" class="menu-link">
+        <li class="menu-item {{ Request::is('Data-Nama-Pangan') ? 'active' : '' }}">
+            <a href="{{ route('namaPangan') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-restaurant"></i>
                 <div class="text-truncate" data-i18n="Basic">Nama Pangan</div>
             </a>
