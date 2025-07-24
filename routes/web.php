@@ -26,6 +26,8 @@ Route::get('/Dashboard', [AdminController::class, 'dashboard'])->name('Dashboard
 Route::get('/Peta-Persebaran', [AdminController::class, 'persebaran'])->name('persebaran');
 Route::get('/Node', [AdminController::class, 'Node'])->name('Node');
 Route::get('/Edge', [AdminController::class, 'Edge'])->name('Edge');
+Route::get('/Data-Produsen', [AdminController::class, 'produsen'])->name('produsen');
+Route::get('/Data-Pangan-Admin', [AdminController::class, 'panganadmin'])->name('panganadmin');
 
 // user
 Route::get('/Beranda', [UserController::class, 'Beranda'])->name('Beranda');

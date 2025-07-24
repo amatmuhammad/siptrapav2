@@ -17,14 +17,14 @@
      </li>
      {{-- feature --}}
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Feature</span></li>
-     <li class="menu-item">
-      <a href="#" class="menu-link">
+     <li class="menu-item {{ Request::is('Data-Produsen') ? 'active' : '' }}">
+      <a href="{{ route('produsen') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bxs-truck"></i>
           <div class="text-truncate" data-i18n="Basic">Data Distributor</div>
       </a>
      </li>
-     <li class="menu-item">
-      <a href="#" class="menu-link">
+     <li class="menu-item {{ Request::is('Data-Pangan-Admin') ? 'active' : '' }}">
+      <a href="{{ route('panganadmin') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bx-leaf"></i>
           <div class="text-truncate" data-i18n="Basic">Data Pangan</div>
       </a>
@@ -39,6 +39,18 @@
             <a href="{{ route('Edge') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-ruler"></i>
                 <div class="text-truncate" data-i18n="Basic">Data Edge</div>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-current-location"></i>
+                <div class="text-truncate" data-i18n="Basic">Kabupaten</div>
+            </a>
+        </li>
+        <li class="menu-item ">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-restaurant"></i>
+                <div class="text-truncate" data-i18n="Basic">Nama Pangan</div>
             </a>
         </li>
         <li class="menu-item">

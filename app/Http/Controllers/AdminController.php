@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\edges;
 use App\Models\nodes;
+use App\Models\pangan;
+use App\Models\produsen;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -103,5 +105,18 @@ class AdminController extends Controller
 
     public function ViewRegister(){
         return view('admin.Register');
+    }
+
+    public function produsen(){
+
+        $strapa = produsen::all();
+
+        return view('admin.produsen', compact('strapa'));
+    }
+
+    public function panganadmin(){
+        $strapa = pangan::all();
+
+        return view('admin.pangan', compact('strapa'));
     }
 }

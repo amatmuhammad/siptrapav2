@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class produsen extends Model
 {
     use HasFactory;
+    
+    protected $table = 'tbl_produsen_distributor';
+
 
     protected $fillable = [
         'user_id', 'nama_distributor', 'no_hp', 'nama_pemilik', 'jenis_pangan',

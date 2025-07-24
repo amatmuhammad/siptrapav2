@@ -11,6 +11,8 @@ class pangan extends Model
 {
     use HasFactory;
 
+    protected $table = 'tbl_pangan';
+
     protected $fillable = [
         'produsen_id', 'jenis_pangan', 'volume', 'asal_pangan', 
         'tujuan_pangan', 'tanggal_pengiriman', 'estimasi_kadaluarsa'

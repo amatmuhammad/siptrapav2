@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('tbl_pangan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('produsen_id')->constrained('tbl_produsen_distributor')->onDelete('cascade');
-            $table->string('jenis_pangan');
-            $table->string('volume'); // misalnya: 100 kg, 2 ton
+            $table->foreignId('nama_pangan_id')->constrained('tbl_nama_pangan')->onDelete('restrict');
+            $table->decimal('volume', 8 , 2)->default(0); // misalnya: 100 kg, 2 ton
             $table->unsignedBigInteger('asal_pangan'); // kabupaten_id
             $table->unsignedBigInteger('tujuan_pangan'); // kabupaten_id
             $table->date('tanggal_pengiriman');
