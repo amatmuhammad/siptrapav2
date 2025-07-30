@@ -192,4 +192,10 @@ class AdminController extends Controller
         return redirect()->route('namaPangan')->with('success', 'Nama Pangan Berhasil Di Update');
         // return view('admin.kabupaten');
     }
+
+    public function destroyNamaPangan($id){
+        $namaPangan = namaPangan::findOrFail($id);
+        $namaPangan->delete();
+        return redirect()->route('namaPangan')->with('success', 'Nama Pangan Berhasil Di hapus');
+    }
 }

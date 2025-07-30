@@ -126,8 +126,8 @@
         });
     </script> --}}
 
-    <script>
-    const weatherData = @json($weatherData);
+<script>
+    const weatherData = Object.values(@json($weatherData));
 
     const labels = weatherData.map(item => item.time);
     const suhu = weatherData.map(item => item.temp);

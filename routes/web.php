@@ -35,12 +35,16 @@ Route::delete('/Delete-Kabupaten/{id}', [AdminController::class, 'destroyKabupat
 Route::get('/Data-Nama-Pangan', [AdminController::class, 'namaPangan'])->name('namaPangan');
 Route::post('/Create-NamaPangan', [AdminController::class, 'createNamaPangan'])->name('createNamaPangan');
 Route::post('/Update-NamaPangan/{id}', [AdminController::class, 'updateNamaPangan'])->name('updateNamaPangan');
+Route::delete('/Delete-Namapangan/{id}', [AdminController::class, 'destroyNamaPangan'])->name('destroyNamaPangan');
 
 // user
 Route::get('/Beranda', [UserController::class, 'Beranda'])->name('Beranda');
-Route::get('/Model-Transportasi', [UserController::class, 'Model'])->name('Model');
 Route::get('/Data-Pangan', [UserController::class, 'pangan'])->name('pangan');
 Route::get('/Distribusi', [UserController::class, 'Distribusi'])->name('Distribusi');
 Route::get('/Prakiraan-Cuaca', [UserController::class, 'Cuaca'])->name('Cuaca');
 Route::get('/Prakiraan-Cuaca', [UserController::class, 'Cuaca'])->name('Cuaca');
+Route::get('/Model-Transportasi', [UserController::class, 'Model'])->name('Model');
 Route::post('/Model-Transportasi/Cari-rute', [UserController::class, 'cariRute'])->name('cariRute');
+Route::post('/Model-Transportasi/Clear', [UserController::class, 'clearRute'])->name('clearRute');
+
+// Route::get('/jalur-alternatif', [UserController::class, 'jalurAlternatif'])->name('jalurAlternatif');

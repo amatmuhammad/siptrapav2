@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use App\Models\edges;
 use App\Models\nodes;
-use App\Helpers\AStar;
+use App\Helpers\MinHeap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
@@ -21,7 +24,19 @@ class UserController extends Controller
         return view('user.pangan');
     }
 
-    public function Cuaca(){
+    public function Distribusi(){
+        return view('user.GrafikDistribusi');
+    }
+
+    public function Model(){
+        // $edge = edges::all();
+        // $node = nodes::all();
+        return view('user.modeltrans');
+    
+    }
+
+    public function Cuaca()
+    {
         // API key langsung ditulis di sini (bukan dari .env)
         $apiKey = 'e762ceb9eca042e9fe87def18486d804';
         // $city = 'Makassar';
@@ -64,239 +79,287 @@ class UserController extends Controller
         return view('user.Grafikcuaca', ['weatherData' => collect()]);
     }
 
-   
+
+    //bidirectional a star with a star alternatif
+    public function cariRute(Request $request)
+    {
+        $jenisPangan = $request->input('jenis_pangan');
+        $volume = $request->input('volume');
+        // $cuaca = $this->cekCuacaJikaBuah($jenisPangan);
+        $cuaca = $this->cekCuacaJikaBuah($request->end_node);
 
 
-    public function Model(){
-        // $edge = edges::all();
-        // $node = nodes::all();
-        return view('user.modeltrans');
-    
+        if ($cuaca) {
+            $alertLevel = 'success'; // default: cuaca baik
+            $alertMessage = 'Cuaca baik dan aman untuk distribusi.';
+
+            if ($cuaca['rain'] > 5 || $cuaca['wind'] > 8) {
+                $alertLevel = 'danger';
+                $alertMessage = 'Cuaca buruk! Distribusi sebaiknya ditunda karena hujan lebat atau angin kencang.';
+            } elseif ($cuaca['rain'] > 2 || $cuaca['wind'] > 5) {
+                $alertLevel = 'warning';
+                $alertMessage = 'Cuaca kurang baik. Harap berhati-hati saat distribusi.';
+            }
+        }
+
+        $start = microtime(true);
+
+        $source = $request->start_node;
+        $target = $request->end_node;
+
+        $nodes = Cache::rememberForever('graph_coords', function () {
+            return nodes::all()->keyBy('name')->map(fn($n) => [
+                'lat' => $n->latitude,
+                'lng' => $n->longitude,
+            ])->toArray();
+        });
+
+        $originalGraph = Cache::rememberForever('graph_edges', function () {
+            $edges = edges::all();
+            $g = [];
+            foreach ($edges as $e) {
+                $g[$e->source][] = ['to' => $e->target, 'cost' => $e->distance];
+                $g[$e->target][] = ['to' => $e->source, 'cost' => $e->distance];
+            }
+            return $g;
+        });
+
+        if (!isset($nodes[$source]) || !isset($nodes[$target])) {
+            return back()->with('error', 'Node tidak ditemukan.');
+        }
+
+        // --- 1. Rute Utama ---
+        [$fullPath, $totalDistance] = $this->bidirectionalAStar($source, $target, $nodes, $originalGraph);
+        $ruteUtama = $this->formatCoords($fullPath, $nodes);
+
+        // --- 2. Modifikasi Edge Cost untuk Alternatif ---
+        $penalizedGraph = $originalGraph;
+        for ($i = 0; $i < count($fullPath) - 1; $i++) {
+            $a = $fullPath[$i];
+            $b = $fullPath[$i + 1];
+            foreach ($penalizedGraph[$a] as &$edge) {
+                if ($edge['to'] === $b) {
+                    $edge['cost'] *= 2; // Penalti
+                }
+            }
+            foreach ($penalizedGraph[$b] as &$edge) {
+                if ($edge['to'] === $a) {
+                    $edge['cost'] *= 2; // Penalti
+                }
+            }
+        }
+
+        // --- 3. Jalankan kembali Bidirectional A* untuk Alternatif ---
+        [$altPath, $altDistance] = $this->bidirectionalAStar($source, $target, $nodes, $penalizedGraph);
+        $ruteAlternatif = $this->formatCoords($altPath, $nodes);
+
+        $executionTime = microtime(true) - $start;
+
+        return view('user.modeltrans', [
+            'rute' => $ruteUtama ?? [],
+            'jalur_alternatif' => $ruteAlternatif ?? [],
+            'distance_km' => isset($totalDistance) ? round($totalDistance, 2) : null,
+            'distance_alt_km' => isset($altDistance) ? round($altDistance, 2) : null,
+            'execution_time' => $executionTime ?? null,
+            'start_node' => $source ?? null,
+            'end_node' => $target ?? null,
+            'jenis_pangan' => $jenisPangan ?? null,
+            'volume' => $volume ?? null,
+            'cuaca' => $cuaca ?? null,
+            'alert_level' => $alertLevel ?? null,
+            'alert_message' => $alertMessage ?? null,
+        ]);
+
     }
 
-    public function Distribusi(){
-        return view('user.GrafikDistribusi');
+    private function approxDistance($a, $b)
+    {
+        $dx = $a['lat'] - $b['lat'];
+        $dy = $a['lng'] - $b['lng'];
+        return sqrt($dx * $dx + $dy * $dy);
     }
 
+    // Function pemanggil bidirectional A* (reusable)
+    private function bidirectionalAStar($source, $target, $nodes, $graph)
+    {
+        $openF = new MinHeap(); $openB = new MinHeap();
+        $gF = []; $gB = [];
+        $cameFromF = []; $cameFromB = [];
+        $visitedF = []; $visitedB = [];
 
-    // public function cariRute(Request $request)
-    // {
-    //      $start = $request->input('start_node');
-    //     $end = $request->input('end_node');
+        $gF[$source] = 0; $gB[$target] = 0;
+        $openF->insert($source, 0); $openB->insert($target, 0);
+        $meetingNode = null;
 
-    //     // Ambil graph dari DB (node & edge)
-    //     $nodes = nodes::all()->keyBy('name'); // anggap kolom 'name' adalah nama kabupaten
-    //     $edges = edges::all();
+        while (!$openF->isEmpty() && !$openB->isEmpty()) {
+            $currentF = $openF->extract();
+            $visitedF[$currentF] = true;
 
-    //     // Konversi data ke format graph
-    //     $graph = [];
-    //     foreach ($edges as $edge) {
-    //         $from = $edge->from;
-    //         $to = $edge->to;
-    //         $cost = $edge->cost;
+            if (isset($visitedB[$currentF])) {
+                $meetingNode = $currentF;
+                break;
+            }
 
-    //         $graph[$from][] = ['to' => $to, 'cost' => $cost];
-    //         $graph[$to][] = ['to' => $from, 'cost' => $cost]; // jika undirected
-    //     }
-
-    //     // Jalankan algoritma A*
-    //     $aStar = new AStar($graph, $nodes);
-    //     $path = $aStar->findPath($start, $end); // misal hasil: ['Kolaka', 'Konawe', 'Kendari']
-
-    //     // Ambil koordinat berdasarkan path
-    //     $rute = nodes::whereIn('name', $path)
-    //         ->orderByRaw("FIELD(name, '" . implode("','", $path) . "')")
-    //         ->get(['latitude as lat', 'longitude as lng']);
-
-    //     return view('user.modeltrans', compact('rute'));
-    // }
-
-// public function cariRute(Request $request)
-// {
-//     $start = $request->input('start_node');
-//     $end = $request->input('end_node');
-
-//     // Ambil semua node dan edge
-//     $nodes = nodes::all()->keyBy('name');
-//     $edges = edges::all();
-
-//     // Bangun graph
-//     $graph = [];
-//     foreach ($edges as $edge) {
-//         $graph[$edge->source][] = ['to' => $edge->target, 'cost' => $edge->distance];
-//         $graph[$edge->target][] = ['to' => $edge->source, 'cost' => $edge->distance];
-//     }
-
-//     // Fungsi bantu: menyambungkan node ke node terdekat jika dia tidak punya tetangga
-//     foreach ([$start, $end] as $node) {
-//         if (!isset($graph[$node]) || empty($graph[$node])) {
-//             $current = $nodes[$node];
-//             $minDist = INF;
-//             $closestNode = null;
-
-//             foreach ($nodes as $targetId => $target) {
-//                 if ($targetId === $node) continue;
-//                 if (!isset($graph[$targetId]) || empty($graph[$targetId])) continue; // hindari node terisolasi juga
-
-//                 $dist = $this->haversine(
-//                     $current->latitude, $current->longitude,
-//                     $target->latitude, $target->longitude
-//                 );
-
-//                 if ($dist < $minDist) {
-//                     $minDist = $dist;
-//                     $closestNode = $targetId;
-//                 }
-//             }
-
-//             // Jika ketemu, sambungkan dua arah
-//             if ($closestNode) {
-//                 $graph[$node][] = ['to' => $closestNode, 'cost' => $minDist];
-//                 $graph[$closestNode][] = ['to' => $node, 'cost' => $minDist];
-//             }
-//         }
-//     }
-
-//     // Jalankan algoritma A*
-//     $start_time = microtime(true);
-
-//     $aStar = new \App\Helpers\AStar($graph, $nodes);
-//     $path = $aStar->findPath($start, $end);
-
-//     $end_time = microtime(true);
-//     $executionTime = round($end_time - $start_time, 6);
-
-//     if (empty($path)) {
-//         return response()->json(['error' => 'Rute tidak ditemukan'], 404);
-//     }
-
-//     // Ambil koordinat path
-//     $rute = nodes::whereIn('name', $path)
-//         ->orderByRaw("FIELD(name, '" . implode("','", $path) . "')")
-//         ->get(['latitude as lat', 'longitude as lng']);
-
-//     return response()->json($rute);
-// }
-
-// // Fungsi haversine distance (dalam km)
-// private function haversine($lat1, $lon1, $lat2, $lon2)
-// {
-//     $earthRadius = 6371;
-
-//     $dLat = deg2rad($lat2 - $lat1);
-//     $dLon = deg2rad($lon2 - $lon1);
-
-//     $lat1 = deg2rad($lat1);
-//     $lat2 = deg2rad($lat2);
-
-//     $a = sin($dLat / 2) ** 2 +
-//          cos($lat1) * cos($lat2) *
-//          sin($dLon / 2) ** 2;
-
-//     $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-//     return $earthRadius * $c;
-// }
-
-
-public function cariRute(Request $request)
-{
-    $start = $request->input('start_node');
-    $end = $request->input('end_node');
-
-    // Ambil semua node dan edge
-    $nodes = nodes::all()->keyBy('name');
-    $edges = edges::all();
-
-    // Bangun graph
-    $graph = [];
-    foreach ($edges as $edge) {
-        $graph[$edge->source][] = ['to' => $edge->target, 'cost' => $edge->distance];
-        $graph[$edge->target][] = ['to' => $edge->source, 'cost' => $edge->distance];
-    }
-
-    // Sambungkan node terisolasi
-    foreach ([$start, $end] as $node) {
-        if (!isset($graph[$node]) || empty($graph[$node])) {
-            $current = $nodes[$node];
-            $minDist = INF;
-            $closestNode = null;
-
-            foreach ($nodes as $targetId => $target) {
-                if ($targetId === $node) continue;
-                if (!isset($graph[$targetId]) || empty($graph[$targetId])) continue;
-
-                $dist = $this->haversine(
-                    $current->latitude, $current->longitude,
-                    $target->latitude, $target->longitude
-                );
-
-                if ($dist < $minDist) {
-                    $minDist = $dist;
-                    $closestNode = $targetId;
+            foreach ($graph[$currentF] ?? [] as $neighbor) {
+                $tentative = $gF[$currentF] + $neighbor['cost'];
+                if (!isset($gF[$neighbor['to']]) || $tentative < $gF[$neighbor['to']]) {
+                    $gF[$neighbor['to']] = $tentative;
+                    $cameFromF[$neighbor['to']] = $currentF;
+                    $h = $this->approxDistance($nodes[$neighbor['to']], $nodes[$target]);
+                    $openF->insert($neighbor['to'], $tentative + $h);
                 }
             }
 
-            if ($closestNode) {
-                $graph[$node][] = ['to' => $closestNode, 'cost' => $minDist];
-                $graph[$closestNode][] = ['to' => $node, 'cost' => $minDist];
+            $currentB = $openB->extract();
+            $visitedB[$currentB] = true;
+
+            if (isset($visitedF[$currentB])) {
+                $meetingNode = $currentB;
+                break;
+            }
+
+            foreach ($graph[$currentB] ?? [] as $neighbor) {
+                $tentative = $gB[$currentB] + $neighbor['cost'];
+                if (!isset($gB[$neighbor['to']]) || $tentative < $gB[$neighbor['to']]) {
+                    $gB[$neighbor['to']] = $tentative;
+                    $cameFromB[$neighbor['to']] = $currentB;
+                    $h = $this->approxDistance($nodes[$neighbor['to']], $nodes[$source]);
+                    $openB->insert($neighbor['to'], $tentative + $h);
+                }
             }
         }
+
+        if (!$meetingNode) return [[], 0];
+
+        $pathF = [$meetingNode];
+        while (isset($cameFromF[$pathF[0]])) array_unshift($pathF, $cameFromF[$pathF[0]]);
+        $pathB = [];
+        $node = $meetingNode;
+        while (isset($cameFromB[$node])) {
+            $node = $cameFromB[$node];
+            $pathB[] = $node;
+        }
+
+        $fullPath = array_merge($pathF, $pathB);
+        $totalDistance = 0;
+        for ($i = 0; $i < count($fullPath) - 1; $i++) {
+            $totalDistance += $this->approxDistance($nodes[$fullPath[$i]], $nodes[$fullPath[$i + 1]]) * 111.32;
+        }
+
+        return [$fullPath, $totalDistance];
     }
 
-    // Jalankan A*
-    $start_time = microtime(true);
-    $aStar = new \App\Helpers\AStar($graph, $nodes);
-    $path = $aStar->findPath($start, $end);
-    $end_time = microtime(true);
-    $executionTime = round($end_time - $start_time, 6); // detik
-
-    if (empty($path)) {
-        return response()->json(['error' => 'Rute tidak ditemukan'], 404);
+    private function formatCoords($path, $nodes)
+    {
+        $coords = [];
+        foreach ($path as $node) {
+            if (isset($nodes[$node])) {
+                $coords[] = ['lat' => $nodes[$node]['lat'], 'lng' => $nodes[$node]['lng']];
+            }
+        }
+        return $coords;
     }
 
-    // Ambil koordinat rute
-    $rute = nodes::whereIn('name', $path)
-        ->orderByRaw("FIELD(name, '" . implode("','", $path) . "')")
-        ->get(['latitude as lat', 'longitude as lng']);
+    // private function cekCuacaJikaBuah($jenisPangan)
+    // {
+    //     $apiKey = 'e762ceb9eca042e9fe87def18486d804';
+    //     $latitude = -4.009557527322553;
+    //     $longitude = 122.52050303886116;
 
-    // Hitung total jarak dari rute (dari titik ke titik)
-    $totalDistance = 0;
-    for ($i = 0; $i < count($rute) - 1; $i++) {
-        $totalDistance += $this->haversine(
-            $rute[$i]->lat, $rute[$i]->lng,
-            $rute[$i + 1]->lat, $rute[$i + 1]->lng
-        );
+    //     $response = Http::get("https://api.openweathermap.org/data/2.5/weather", [
+    //         'lat'   => $latitude,
+    //         'lon'   => $longitude,
+    //         'appid' => $apiKey,
+    //         'units' => 'metric',
+    //         'lang'  => 'id'
+    //     ]);
+
+    //     if ($response->successful()) {
+    //         $data = $response->json();
+
+    //         return [
+    //             'description' => $data['weather'][0]['description'],
+    //             'temperature' => $data['main']['temp'],
+    //             'humidity' => $data['main']['humidity'],
+    //             'wind' => $data['wind']['speed'],
+    //             'rain' => $weather['rain']['3h'] ?? 0,
+    //             'timestamp' => Carbon::now('Asia/Makassar')->format('H:i d/m/Y'),
+    //         ];
+    //     }
+
+    //     return null;
+    // }
+
+    private function cekCuacaJikaBuah($endNode)
+    {
+        $node = nodes::where('name', $endNode)->first();
+        if (!$node) {
+            return null;
+        }
+
+        $apiKey = 'e762ceb9eca042e9fe87def18486d804';
+        $latitude = $node->latitude;
+        $longitude = $node->longitude;
+
+        $response = Http::get("https://api.openweathermap.org/data/2.5/weather", [
+            'lat'   => $latitude,
+            'lon'   => $longitude,
+            'appid' => $apiKey,
+            'units' => 'metric',
+            'lang'  => 'id'
+        ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+
+            return [
+                'description' => $data['weather'][0]['description'],
+                'temperature' => $data['main']['temp'],
+                'humidity' => $data['main']['humidity'],
+                'wind' => $data['wind']['speed'],
+                'rain' => $data['rain']['3h'] ?? 0,
+                'timestamp' => Carbon::now('Asia/Makassar')->format('H:i d/m/Y'),
+            ];
+        }
+
+        return null;
     }
 
-    return response()->json([
-        'rute' => $rute,
-        'totalDistance' => round($totalDistance, 2), // km
-        'executionTime' => $executionTime . ' detik',
-    ]);
-}
 
-private function haversine($lat1, $lon1, $lat2, $lon2)
-{
-    $earthRadius = 6371; // radius bumi dalam km
+    //end
 
-    $dLat = deg2rad($lat2 - $lat1);
-    $dLon = deg2rad($lon2 - $lon1);
+    public function clearRute(Request $request)
+    {
+        Session::forget(['start', 'end', 'rute', 'jalur_alternatif']);
+        return response()->json([
+            'message' => 'Session cleared',
+            'redirect' => route('Model') // Ini akan dikirim ke JS untuk redirect
+        ]);
+    }
 
-    $lat1 = deg2rad($lat1);
-    $lat2 = deg2rad($lat2);
 
-    $a = sin($dLat / 2) ** 2 +
-         cos($lat1) * cos($lat2) *
-         sin($dLon / 2) ** 2;
 
-    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
-    return $earthRadius * $c;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
     
+
+
+
+
 }

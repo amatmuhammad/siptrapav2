@@ -70,7 +70,7 @@
                           <td>
                              <div>
                                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
-                                <form action="{{ route('destroyKabupaten', $item->id)  }}" method="POST">
+                                <form action="{{ route('destroyNamaPangan', $item->id)  }}" method="POST">
                                   @csrf
                                   @method('DELETE')
                                   <button class="btn btn-danger"> <i class="icon-base bx bx-trash me-1"></i></button>
