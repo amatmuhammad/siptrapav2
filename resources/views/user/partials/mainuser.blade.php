@@ -114,6 +114,22 @@
     </div>
     <!-- Footer End -->
 
+    {{-- session scroll --}}
+    <script>
+        // Simpan posisi scroll sebelum reload atau pindah halaman
+        window.addEventListener("beforeunload", function () {
+            localStorage.setItem("scrollPosition", window.scrollY);
+        });
+
+        // Setelah halaman dimuat, kembalikan posisi scroll
+        window.addEventListener("load", function () {
+            const scrollPos = localStorage.getItem("scrollPosition");
+            if (scrollPos !== null) {
+                window.scrollTo(0, parseInt(scrollPos));
+            }
+        });
+    </script>
+
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>

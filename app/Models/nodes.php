@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class nodes extends Model
 {
     use HasFactory;
+    
 
     protected $table = 'nodes';
 

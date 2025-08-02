@@ -85,6 +85,8 @@
                 <div class="col">
                     <div class="card mb-5 shadow rounded-3" style="border-radius: 10px;">
                         <div class="card-body">
+                            <h4 class="mb-4">Peta Pemodelan Transportasi </h4>
+                            <hr style="border: 2px solid rgb(225, 225, 225);">
                             @if (isset($cuaca))
                                 <div class="alert alert-{{ $alert_level }} mt-3">
                                     <h5><strong>Informasi Cuaca Saat Ini</strong></h5>
@@ -199,7 +201,7 @@
     
 
     {{-- with alternatif a star --}}
-    <script>
+    {{-- <script>
         const map = L.map('map').setView([-4.0, 122.5], 8);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -273,7 +275,7 @@
             });
         });
 
-    </script>
+    </script> --}}
 
     {{-- <script>
         var map = L.map('map').setView([-4.0, 122.5], 8);
@@ -338,5 +340,75 @@
         }
     </script> --}}
 
+<script>
+    const map = L.map('map').setView([-4.0, 122.5], 8);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const routeMain = {!! json_encode($rute ?? []) !!};
+    const routeAlt = {!! json_encode($jalur_alternatif ?? []) !!};
+    const startNode = {!! json_encode($start_node ?? null) !!};
+    const endNode = {!! json_encode($end_node ?? null) !!};
+
+    if (routeMain.length) {
+        L.polyline(routeMain.map(p => [p.lat, p.lng]), {
+            color: 'blue',
+            weight: 4
+        }).addTo(map).bindPopup("Rute Utama");
+
+        // Marker Titik Awal
+        const startPoint = routeMain[0];
+        if (startNode && startPoint) {
+            L.marker([startPoint.lat, startPoint.lng])
+                .addTo(map)
+                .bindPopup("Titik Awal: " + startNode.name)
+                .openPopup();
+        }
+
+        // Marker Titik Tujuan
+        const endPoint = routeMain[routeMain.length - 1];
+        if (endNode && endPoint) {
+            L.marker([endPoint.lat, endPoint.lng])
+                .addTo(map)
+                .bindPopup("Titik Tujuan: " + endNode.name);
+        }
+    }
+
+    if (routeAlt.length) {
+        L.polyline(routeAlt.map(p => [p.lat, p.lng]), {
+            color: 'red',
+            weight: 3,
+            dashArray: '5, 10'
+        }).addTo(map).bindPopup("Rute Alternatif");
+    }
+
+    // Tombol clear
+    document.getElementById('btn-clear').addEventListener('click', function () {
+        map.eachLayer(layer => {
+            if (layer instanceof L.Polyline || layer instanceof L.Marker) {
+                map.removeLayer(layer);
+            }
+        });
+
+        // Kirim AJAX untuk hapus session
+        fetch("{{ route('clearRute') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data.message);
+            window.location.href = data.redirect;
+        })
+        .catch(err => {
+            console.error("Gagal menghapus session:", err);
+        });
+    });
+</script>
 
     @endsection

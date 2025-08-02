@@ -46,32 +46,13 @@
                     </li>
                     <li>
                       <div class="dropdown-divider my-1"></div>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">
-                        <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">
-                        <i class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">
-                        <span class="d-flex align-items-center align-middle">
-                          <i class="flex-shrink-0 icon-base bx bx-credit-card icon-md me-3"></i
-                          ><span class="flex-grow-1 align-middle">Billing Plan</span>
-                          <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <div class="dropdown-divider my-1"></div>
-                    </li>
                     <li>
                       <a class="dropdown-item" href="javascript:void(0);">
-                        <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span>
+                        <form action="{{ route('logout') }} " method="POST">
+                          @csrf
+                            <button type="submit" class="dropdown-item"><i class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span></button>
+                        </form>	
+                        
                       </a>
                     </li>
                   </ul>

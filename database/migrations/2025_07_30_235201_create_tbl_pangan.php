@@ -14,13 +14,20 @@ return new class extends Migration
         Schema::create('tbl_pangan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('produsen_id')->constrained('tbl_produsen_distributor')->onDelete('cascade');
-            $table->foreignId('nama_pangan_id')->constrained('tbl_nama_pangan')->onDelete('restrict');
-            $table->decimal('volume', 8 , 2)->default(0); // misalnya: 100 kg, 2 ton
-            $table->unsignedBigInteger('asal_pangan'); // kabupaten_id
-            $table->unsignedBigInteger('tujuan_pangan'); // kabupaten_id
+            $table->foreignId('nama_pangan_id')->constrained('tbl_nama_pangan')->onDelete('cascade');
+            $table->decimal('volume', 8, 2);
+
+            // Asal pangan dan tujuan pangan merujuk ke tabel yang sama, harus didefinisikan manual
+            $table->unsignedBigInteger('asal_pangan');
+            $table->unsignedBigInteger('tujuan_pangan');
+
             $table->date('tanggal_pengiriman');
-            $table->date('estimasi_kadaluarsa')->nullable();
+            $table->date('estimasi_kadaluarsa');
             $table->timestamps();
+
+            // Relasi manual ke tbl_kabupaten
+            $table->foreign('asal_pangan')->references('id')->on('tbl_kabupaten')->onDelete('cascade');
+            $table->foreign('tujuan_pangan')->references('id')->on('tbl_kabupaten')->onDelete('cascade');
         });
     }
 

@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use DB;
+// use DB;
 use App\Models\edges;
 use App\Models\nodes;
+use App\Models\pangan;
 use App\Helpers\MinHeap;
+use App\Models\kabupaten;
+use App\Models\namaPangan;
+use App\Models\produsen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
@@ -17,15 +22,49 @@ class UserController extends Controller
     //
 
     public function Beranda(){
-        return view('user.DashboardUser');
+        $data = kabupaten::count();
+        $produsen = produsen::count();
+        $nama_pangan = namaPangan::count();
+
+        return view('user.DashboardUser', compact('data','produsen','nama_pangan'));
     }
 
-    public function pangan(){
-        return view('user.pangan');
+    public function pangan(Request $request){
+        $nama_pangan = namaPangan::all();
+
+        $bulanList = pangan::selectRaw("DATE_FORMAT(tanggal_pengiriman, '%Y-%m') as bulan")
+                        ->distinct()
+                        ->orderBy('bulan', 'desc')
+                        ->pluck('bulan');
+
+        $filter_pangan = $request->input('nama_pangan_id');
+        $filter_bulan = $request->input('bulan') ?? now()->format('Y-m');
+
+        $query = Pangan::join('tbl_kabupaten as k', 'tbl_pangan.tujuan_pangan', '=', 'k.id')
+            ->select('k.nama_kabupaten', DB::raw('SUM(tbl_pangan.volume) as total_volume'))
+            ->groupBy('k.nama_kabupaten');
+
+        if ($filter_pangan) {
+            $query->where('tbl_pangan.nama_pangan_id', $filter_pangan);
+        }
+
+        if ($filter_bulan) {
+            $query->whereRaw("DATE_FORMAT(tanggal_pengiriman, '%Y-%m') = ?", [$filter_bulan]);
+        }
+
+        $data = $query->get();
+
+        // Cek jika request-nya AJAX, kembalikan data JSON saja
+        if ($request->ajax()) {
+            return response()->json($data);
+        }
+
+        return view('user.pangan', compact('data', 'filter_pangan', 'filter_bulan', 'nama_pangan', 'bulanList'));
     }
 
     public function Distribusi(){
-        return view('user.GrafikDistribusi');
+        $dataDistribusi = pangan::with(['asalKabupaten', 'tujuanKabupaten', 'namaPangan'])->get();
+        return view('user.GrafikDistribusi', compact('dataDistribusi'));
     }
 
     public function Model(){
@@ -259,36 +298,6 @@ class UserController extends Controller
         }
         return $coords;
     }
-
-    // private function cekCuacaJikaBuah($jenisPangan)
-    // {
-    //     $apiKey = 'e762ceb9eca042e9fe87def18486d804';
-    //     $latitude = -4.009557527322553;
-    //     $longitude = 122.52050303886116;
-
-    //     $response = Http::get("https://api.openweathermap.org/data/2.5/weather", [
-    //         'lat'   => $latitude,
-    //         'lon'   => $longitude,
-    //         'appid' => $apiKey,
-    //         'units' => 'metric',
-    //         'lang'  => 'id'
-    //     ]);
-
-    //     if ($response->successful()) {
-    //         $data = $response->json();
-
-    //         return [
-    //             'description' => $data['weather'][0]['description'],
-    //             'temperature' => $data['main']['temp'],
-    //             'humidity' => $data['main']['humidity'],
-    //             'wind' => $data['wind']['speed'],
-    //             'rain' => $weather['rain']['3h'] ?? 0,
-    //             'timestamp' => Carbon::now('Asia/Makassar')->format('H:i d/m/Y'),
-    //         ];
-    //     }
-
-    //     return null;
-    // }
 
     private function cekCuacaJikaBuah($endNode)
     {

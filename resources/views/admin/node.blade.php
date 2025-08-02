@@ -55,7 +55,7 @@
                     </div>
                   <div class="table-responsive ">
                     <table class="table table-bordered table-striped">
-                      <thead>
+                      <thead class="table-warning">
                         <tr class="text-center">
                           <th>No</th>
                           <th>Name Node</th>
@@ -81,8 +81,8 @@
                           <td>
                             
                              <div>
-                                <button class="btn btn-warning"><i class="icon-base bx bx-edit-alt me-1"></i></button>
-                                <button class="btn btn-danger"> <i class="icon-base bx bx-trash me-1"></i></button>
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
+                                {{-- <button class="btn btn-danger"> <i class="icon-base bx bx-trash me-1"></i></button> --}}
                             </div>                              
                           </td>
                         </tr>
@@ -102,9 +102,6 @@
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                       <span class="text-muted">Total Data Node : {{ $strapa->total() }} Data</span>
-                      {{-- <div>
-                          {{ $strapa->links('pagination::bootstrap-5', ['class' => 'pagination-sm']) }}
-                      </div> --}}
 
                       <nav>
                             <ul class="pagination justify-content-center pagination-md mt-3">
@@ -139,6 +136,51 @@
         </div>
     </div>
 </div>
+
+@foreach ($strapa as $item)
+<!-- Modal Update -->
+<div class="modal fade" id="updateModal{{ $item->id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ $item->id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{ route('updateNode', $item->id) }}" method="POST">
+      @csrf
+      @method('PUT')
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModalLabel{{ $item->id }}">Update Node</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <label>Nama Node</label>
+            <input type="text" name="name" class="form-control" value="{{ $item->name }}" required>
+          </div>
+          <div class="mb-2">
+            <label>Latitude</label>
+            <input type="text" disabled name="latitude" class="form-control" value="{{ $item->latitude }}" required>
+          </div>
+          <div class="mb-2">
+            <label>Longitude</label>
+            <input type="text" disabled name="longitude" class="form-control" value="{{ $item->longitude }}" required>
+          </div>
+          <div class="mb-2">
+            <label>Kategori</label>
+            <input type="text" disabled name="category" class="form-control" value="{{ $item->category }}" required>
+          </div>
+          <div class="mb-2">
+            <label>Nama Jalan</label>
+            <input type="text" disabled name="roadname" class="form-control" value="{{ $item->roadname }}">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-info">Simpan Perubahan</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+@endforeach
+
 
 
 @endsection

@@ -55,7 +55,7 @@
                     </div>
                   <div class="table-responsive ">
                     <table class="table table-bordered table-striped">
-                      <thead>
+                      <thead class="table-warning">
                         <tr class="text-center">
                           <th>No</th>
                           <th>Source</th>
@@ -79,8 +79,8 @@
                           <td>
                             
                              <div>
-                                <button class="btn btn-warning"><i class="icon-base bx bx-edit-alt me-1"></i></button>
-                                <button class="btn btn-danger"> <i class="icon-base bx bx-trash me-1"></i></button>
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModalEdge{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
+                                {{-- <button class="btn btn-danger"> <i class="icon-base bx bx-trash me-1"></i></button> --}}
                             </div>                              
                           </td>
                         </tr>
@@ -137,5 +137,45 @@
         </div>
     </div>
 </div>
+
+@foreach($strapa as $item)
+<div class="modal fade" id="updateModalEdge{{ $item->id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ $item->id }}" aria-hidden="true">
+  <div class="modal-dialog" style="margin-top: 150px;">
+    <form action="{{ route('updateEdge', $item->id) }}" method="POST">
+      @csrf
+      @method('PUT')
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Edge</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+
+          <div class="mb-2">
+            <label>Source Node</label>
+            <input type="text" name="source" class="form-control" value="{{ $item->source }}">
+          </div>
+
+          <div class="mb-2">
+            <label>Target Node</label>
+            <input type="text" name="target" class="form-control" value="{{ $item->target }}">
+          </div>
+
+          <div class="mb-2">
+            <label>Distance (km)</label>
+            <input type="number" step="0.001" name="distance" class="form-control" value="{{ $item->distance }}" disabled>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+@endforeach
+
 
 @endsection

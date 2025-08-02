@@ -67,7 +67,7 @@
                         <div class="card-body text-center p-0">
                             <div class="team-text d-flex flex-column justify-content-center bg-secondary">
                                 <h5 class="font-weight-bold">Asa Hari Wibowo, S.T., M.Eng.</h5>
-                                <span> Web Programmer</span>
+                                <span>Team Research</span>
                             </div>
                             <div class="team-social d-flex align-items-center justify-content-center bg-primary">
                                 <a class="btn btn-outline-dark btn-social mr-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -84,7 +84,7 @@
                         <div class="card-body text-center p-0">
                             <div class="team-text d-flex flex-column justify-content-center bg-secondary">
                                 <h5 class="font-weight-bold">Prof. Dr. Adris Ade Putra, ST,MT. IPM, ASEAN Eng</h5>
-                                <span>Project Manager</span>
+                                <span>Leader Research</span>
                             </div>
                             <div class="team-social d-flex align-items-center justify-content-center bg-primary">
                                 <a class="btn btn-outline-dark btn-social mr-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -101,7 +101,7 @@
                         <div class="card-body text-center p-0">
                             <div class="team-text d-flex flex-column justify-content-center bg-secondary">
                                 <h5 class="font-weight-bold">Dr. Jenny Delly, ST., MT</h5>
-                                <span>Assistan Project</span>
+                                <span>Team Research</span>
                             </div>
                             <div class="team-social d-flex align-items-center justify-content-center bg-primary">
                                 <a class="btn btn-outline-dark btn-social mr-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -127,15 +127,15 @@
                     <p class="mb-4">Dolores lorem lorem ipsum sit et ipsum. Sadip sea amet diam dolore sed et. Sit rebum labore sit sit ut vero no sit. Et elitr stet dolor sed sit et sed ipsum et kasd ut. Erat duo eos et erat sed diam duo</p>
                     <div class="row">
                         <div class="col-sm-4">
-                            <h1 class="text-primary mb-2" data-toggle="counter-up">17</h1>
+                            <h1 class="text-primary mb-2" data-toggle="counter-up">{{ $data }}</h1>
                             <h6 class="font-weight-bold mb-4">Wilayah Kabupaten</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h1 class="text-primary mb-2" data-toggle="counter-up">100+</h1>
+                            <h1 class="text-primary mb-2" data-toggle="counter-up">{{ $produsen }}</h1>
                             <h6 class="font-weight-bold mb-4">Distributor</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h1 class="text-primary mb-2" data-toggle="counter-up">10</h1>
+                            <h1 class="text-primary mb-2" data-toggle="counter-up">{{ $nama_pangan }}</h1>
                             <h6 class="font-weight-bold mb-4">Komoditi Pangan</h6>
                         </div>
                     </div>

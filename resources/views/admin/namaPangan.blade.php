@@ -65,16 +65,17 @@
                       <tbody class="text-center">
                       @forelse ($strapa as $item)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $strapa->firstItem() + $loop->index }}</td>
                             <td>{{ $item->nama_pangan }}</td>
                           <td>
                              <div>
                                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
-                                <form action="{{ route('destroyNamaPangan', $item->id)  }}" method="POST">
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $item->id }}"> <i class="icon-base bx bx-trash me-1"></i></button>
+                                
+                                {{-- <form action="{{ route('destroyNamaPangan', $item->id)  }}" method="POST">
                                   @csrf
                                   @method('DELETE')
-                                  <button class="btn btn-danger"> <i class="icon-base bx bx-trash me-1"></i></button>
-                                </form>
+                                </form> --}}
                             </div>                              
                           </td>
                         </tr>
@@ -93,9 +94,9 @@
                     </table>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
-                      {{-- <span class="text-muted">Total Data Node : {{ $strapa->total() }} Data</span> --}}
+                      <span class="text-muted ">Total Data Nama Pangan : {{ $strapa->total() }} Data</span>
 
-                        {{-- <nav>
+                        <nav>
                             <ul class="pagination justify-content-center pagination-md mt-3">
                                 
                                 @if ($strapa->onFirstPage())
@@ -120,7 +121,7 @@
                                     <li class="page-item disabled"><span class="page-link">Next</span></li>
                                 @endif
                             </ul>
-                        </nav> --}}
+                        </nav>
 
                   </div> 
                 </div>
@@ -178,6 +179,30 @@
       </div>
     </div>
   </div>  
+@endforeach
+
+@foreach ($strapa as $item)
+    <div class="modal fade" id="deleteModal{{ $item->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $item->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ route('destroyNamaPangan', $item->id) }}" method="POST">
+          @csrf
+          @method('DELETE')
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Konfirmasi Hapus</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              Apakah Anda yakin ingin menghapus data Nama pangan <strong>{{ $item->nama_pangan }}</strong> ?
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">Hapus</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
 @endforeach
 
 

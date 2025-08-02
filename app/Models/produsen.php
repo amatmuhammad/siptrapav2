@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\pangan;
+use App\Models\kabupaten;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,11 +31,15 @@ class produsen extends Model
         'longitude'
     ];
 
-    public function user(): BelongsTo {
-        return $this->belongsTo(User::class, 'user_id');
+    // Relasi ke kabupaten asal
+    public function asalKabupaten()
+    {
+        return $this->belongsTo(kabupaten::class, 'asal');
     }
 
-    public function pangans(): HasMany {
+    // Relasi ke data pangan yang dikirim oleh produsen ini
+    public function pangan()
+    {
         return $this->hasMany(pangan::class, 'produsen_id');
     }
 }

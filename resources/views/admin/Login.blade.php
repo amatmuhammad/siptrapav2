@@ -45,6 +45,7 @@
 
     <!-- Helpers -->
     <script src="{{ asset('assets1/assets/vendor/js/helpers.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
 
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
@@ -71,17 +72,19 @@
                 </a>
               </div>
               <!-- /Logo -->
-              <h4 class="mb-1 text-center">Selamat Datang</h4>
-              <p class="mb-6 text-center">Mohon Masukkan Identitas Anda yang Telah Terdaftar</p>
+              {{-- <h4 class="mb-1 text-center">Selamat Datang</h4>
+              <p class="mb-6 text-center">Mohon Masukkan Identitas Anda yang Telah Terdaftar</p> --}}
 
-              <form id="formAuthentication" class="mb-6" action="index.html">
+              <form id="formAuthentication" method="POST" class="mb-6" action="{{ route('loginproses') }}">
+                @csrf
+                @method('POST')
                 <div class="mb-6">
                   <label for="email" class="form-label">Email</label>
                   <input
                     type="text"
                     class="form-control"
                     id="email"
-                    name="email-username"
+                    name="email"
                     placeholder="Enter your email"
                     autofocus />
                 </div>
@@ -101,7 +104,7 @@
                 <div class="mb-8">
                   <div class="d-flex justify-content-between">
                     <div class="form-check mb-0">
-                      <input class="form-check-input" type="checkbox" id="remember-me" />
+                      <input class="form-check-input" type="checkbox" id="remember-me" checked />
                       <label class="form-check-label" for="remember-me"> Remember Me </label>
                     </div>
                     <a href="auth-forgot-password-basic.html">
@@ -110,22 +113,51 @@
                   </div>
                 </div>
                 <div class="mb-6">
-                  <button class="btn btn-warning d-grid w-100" type="submit">Login</button>
+                  <button class="btn btn-outline-warning d-grid w-100" type="submit">Login</button>
                 </div>
               </form>
 
-              <p class="text-center">
+              {{-- <p class="text-center">
                 <span>Belum memiliki akun?</span>
                 <a href="{{ route('ViewRegister') }}">
                   <span>Buat akun</span>
                 </a>
-              </p>
+              </p> --}}
             </div>
           </div>
           <!-- /Register -->
         </div>
       </div>
     </div>
+    <script>
+       @if(session('success'))
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Berhasil',
+                  text: "{{ session('success') }}",
+                  confirmButtonColor: '#3085d6'
+              });
+          @endif
+
+          @if(session('error'))
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Gagal',
+                  text: "{{ session('error') }}",
+                  confirmButtonColor: '#d33'
+              });
+          @endif
+
+          @if($errors->any())
+              let errorMsg = @json($errors->all());
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Validasi Gagal',
+                  html: errorMsg.map(e => `<p>• ${e}</p>`).join(''),
+                  confirmButtonColor: '#d33'
+              });
+          @endif
+    </script>
 
     <!-- / Content -->
 
