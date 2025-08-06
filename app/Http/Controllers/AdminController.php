@@ -81,7 +81,7 @@ class AdminController extends Controller
         }
 
         // Query dasar
-        $query = nodes::orderBy('created_at', 'asc');
+        $query = nodes::orderBy('roadname', 'asc');
 
         // Tambahkan filter pencarian kalau ada
         if (!empty($search)) {
@@ -98,6 +98,79 @@ class AdminController extends Controller
         ]);
 
         return view('admin.Node', compact('strapa', 'showEntries', 'search'));
+    }
+
+    public function storeNode(Request $request)
+    {
+        // dd($request->all());
+        $validated = $request->validate([
+            'name' => 'required|string|unique:nodes,name',
+            'category' => 'nullable|string',
+            'roadname' => 'nullable|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        // 1. Simpan node baru
+       $node = nodes::create($validated);
+
+        $this->connectToNearestNode($node);
+        return redirect()->route('Node')->with('success', 'Node berhasil ditambahkan dan edge otomatis dibuat.');
+    }
+
+    private function connectToNearestNode($newNode)
+    {
+        $allNodes = nodes::where('id', '!=', $newNode->id)->get();
+
+        if ($allNodes->isEmpty()) return;
+
+        $nearestNode = null;
+        $minDistance = INF;
+
+        foreach ($allNodes as $node) {
+            $distance = $this->haversineDistance([
+                'lat' => (float)$newNode->latitude,
+                'lng' => (float)$newNode->longitude
+            ], [
+                'lat' => (float)$node->latitude,
+                'lng' => (float)$node->longitude
+            ]);
+
+            if ($distance < $minDistance) {
+                $minDistance = $distance;
+                $nearestNode = $node;
+            }
+        }
+
+        if ($nearestNode) {
+            // Tambahkan edge dua arah
+            edges::create([
+                'source' => $newNode->name,
+                'target' => $nearestNode->name,
+                'distance' => $minDistance,
+            ]);
+
+            edges::create([
+                'source' => $nearestNode->name,
+                'target' => $newNode->name,
+                'distance' => $minDistance,
+            ]);
+        }
+    }
+
+    private function haversineDistance($a, $b)
+    {
+        $earthRadius = 6371;
+        $lat1 = deg2rad($a['lat']);
+        $lon1 = deg2rad($a['lng']);
+        $lat2 = deg2rad($b['lat']);
+        $lon2 = deg2rad($b['lng']);
+
+        $dLat = $lat2 - $lat1;
+        $dLon = $lon2 - $lon1;
+
+        $h = sin($dLat / 2) ** 2 + cos($lat1) * cos($lat2) * sin($dLon / 2) ** 2;
+        return 2 * $earthRadius * asin(sqrt($h));
     }
 
     public function updateNode(Request $request, $id)
@@ -152,23 +225,23 @@ class AdminController extends Controller
 
     }
 
-    public function updateEdge(Request $request, $id)
-    {
-        $request->validate([
-            'source' => 'required|exists:nodes,name',
-            'target' => 'required|exists:nodes,name',
-            // 'distance' => 'required|numeric|min:0', // tidak divalidasi
-        ]);
+    // public function updateEdge(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'source' => 'required|exists:nodes,name',
+    //         'target' => 'required|exists:nodes,name',
+    //         // 'distance' => 'required|numeric|min:0', // tidak divalidasi
+    //     ]);
 
-        $edge = edges::findOrFail($id);
-        $edge->update([
-            'source' => $request->source,
-            'target' => $request->target,
-            // 'distance' => $request->distance, // tidak diubah
-        ]);
+    //     $edge = edges::findOrFail($id);
+    //     $edge->update([
+    //         'source' => $request->source,
+    //         'target' => $request->target,
+    //         // 'distance' => $request->distance, // tidak diubah
+    //     ]);
 
-        return redirect()->back()->with('success', 'Data edge berhasil diperbarui.');
-    }
+    //     return redirect()->back()->with('success', 'Data edge berhasil diperbarui.');
+    // }
 
 
     public function login(){

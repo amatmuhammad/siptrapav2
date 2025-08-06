@@ -61,7 +61,7 @@
                           <th>Source</th>
                           <th>Target</th>
                           <th>Distance</th>
-                          <th>Actions</th>
+                          {{-- <th>Actions</th> --}}
                         </tr>
                       </thead>
                       
@@ -76,13 +76,13 @@
                             {{$item->target}}
                           </td>
                           <td>{{ $item->distance }}</td>
-                          <td>
+                          {{-- <td> --}}
                             
                              <div>
-                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModalEdge{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
+                                {{-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModalEdge{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button> --}}
                                 {{-- <button class="btn btn-danger"> <i class="icon-base bx bx-trash me-1"></i></button> --}}
                             </div>                              
-                          </td>
+                          {{-- </td> --}}
                         </tr>
                       @empty
                       <tr>

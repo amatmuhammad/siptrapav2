@@ -162,7 +162,7 @@
 
           <div class="mb-3">
             <label>Gambar</label>
-            <input type="file" name="gambar" class="form-control">
+            <input type="file" name="gambar" class="form-control" required>
           </div>
 
           <div class="mb-3">

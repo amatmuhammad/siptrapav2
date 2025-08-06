@@ -31,6 +31,8 @@ Route::middleware('auth')->group(function(){
         Route::get('/Dashboard', [AdminController::class, 'dashboard'])->name('Dashboard');
         Route::get('/Peta-Persebaran', [AdminController::class, 'persebaran'])->name('persebaran');
         Route::get('/Node', [AdminController::class, 'Node'])->name('Node');
+        Route::post('/refresh-cache', [UserController::class, 'RefreshGraph'])->name('RefreshGraph');
+        Route::post('/Node-Create', [AdminController::class, 'storeNode'])->name('storeNode');
         Route::put('/Update-Node/{id}', [AdminController::class, 'updateNode'])->name('updateNode');
         Route::get('/Edge', [AdminController::class, 'Edge'])->name('Edge');
         Route::put('/Update-Edge/{id}', [AdminController::class, 'updateEdge'])->name('updateEdge');

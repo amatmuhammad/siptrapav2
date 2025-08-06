@@ -145,7 +145,7 @@
         <div class="modal-header">
           <h5 class="modal-title">Tambah Data Pangan</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          <hr style="border: black 2px solid;">
+          {{-- <hr style="border: black 2px solid;"> --}}
         </div>
         <div class="modal-body">
           <div class="row">

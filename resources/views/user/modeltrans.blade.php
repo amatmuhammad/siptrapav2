@@ -1,8 +1,8 @@
-    @extends('user.partials.mainuser')
+@extends('user.partials.mainuser')
 
-    @section('judul','Model Transportasi')
+@section('judul','Model Transportasi')
 
-    @section('konten')
+@section('konten')
 
         <style>
         
@@ -61,11 +61,11 @@
     {{-- jumbotron --}}
         <div class="jumbotron jumbotron-fluid mb-5">
             <div class="container text-center py-5">
-                <h1 class="text-primary display-3">Model Transportasi</h1>
+                <h1 class="text-primary display-3">Model Transportasi Pangan Berbasis Data Real Time</h1>
                 <div class="d-inline-flex align-items-center text-white">
                     <p class="m-0"><a class="text-white" href="">Home</a></p>
                     <i class="fa fa-circle px-3"></i>
-                    <p class="m-0">Model Transportasi</p>
+                    <p class="m-0">Model Distribusi Pangan</p>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                         <div class="card-body">
                             <h4 class="mb-4">Peta Pemodelan Transportasi </h4>
                             <hr style="border: 2px solid rgb(225, 225, 225);">
-                            @if (isset($cuaca))
+                            {{-- @if (isset($cuaca))
                                 <div class="alert alert-{{ $alert_level }} mt-3">
                                     <h5><strong>Informasi Cuaca Saat Ini</strong></h5>
                                     <p>{{ $alert_message }}</p>
@@ -100,7 +100,123 @@
                                         <li><strong>Waktu:</strong> {{ $cuaca['timestamp'] }}</li>
                                     </ul>
                                 </div>
+                            @endif --}}
+
+                            @if (isset($cuaca))
+                                <div class="alert alert-{{ $alert_level }} mt-3">
+                                    <h5><strong>Informasi Cuaca & Waktu Tempuh</strong></h5>
+                                    <p>{{ $alert_message }}</p>
+
+                                    <div class="row">
+                                        <!-- Kolom 1 -->
+                                        <div class="col-md-4 mb-2">
+                                            <ul>
+                                                <li><strong>Deskripsi:</strong> {{ $cuaca['description'] }}</li>
+                                                <li><strong>Suhu:</strong> {{ $cuaca['temperature'] }} °C</li>
+                                            </ul>
+                                        </div>
+
+                                        <!-- Kolom 2 -->
+                                        <div class="col-md-4 mb-2">
+                                            <ul>
+                                                <li><strong>Kelembaban:</strong> {{ $cuaca['humidity'] }} %</li>
+                                                <li><strong>Angin:</strong> {{ $cuaca['wind'] }} m/s</li>
+                                            </ul>
+                                        </div>
+
+                                        <!-- Kolom 3 -->
+                                        <div class="col-md-4 mb-2">
+                                            <ul>
+                                                <li><strong>Hujan:</strong> {{ $cuaca['rain'] }} mm (3 jam)</li>
+                                                <li><strong>Waktu:</strong> {{ $cuaca['timestamp'] }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                             <ul>
+                                                @if(isset($waktu_tempuh))
+                                                    <li><strong>Waktu Tempuh (Rute Utama):</strong> {{ $waktu_tempuh['jam'] }} jam {{ $waktu_tempuh['menit'] }} menit</li>
+                                                @endif
+
+                                                @if(isset($waktu_tempuh_alt))
+                                                    <li><strong>Waktu Tempuh (Alternatif):</strong> {{ $waktu_tempuh_alt['jam'] }} jam {{ $waktu_tempuh_alt['menit'] }} menit</li>
+                                                @endif
+
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <ul>
+                                                @if(isset($biaya_utama))
+                                                    <li>
+                                                        <strong>
+                                                            <span role="button" data-toggle="modal" data-target="#biayaModal" style="cursor: pointer;">
+                                                                Estimasi Biaya (Rute Utama) : 
+                                                            </span>
+                                                        </strong>
+                                                        Rp{{ number_format($biaya_utama, 0, ',', '.') }}
+                                                    </li>
+                                                @endif
+
+                                                @if(isset($biaya_alternatif))
+                                                    <li>
+                                                        <strong>
+                                                            <span role="button" data-toggle="modal" data-target="#biayaModal" style="cursor: pointer;">
+                                                                Estimasi Biaya (Rute Alternatif) : 
+                                                            </span>
+                                                        </strong> Rp {{ number_format($biaya_alternatif, 0, ',', '.') }}
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                   
+                                    
+                                </div>
+                                <div class="modal fade" id="biayaModal" tabindex="-1" aria-labelledby="biayaModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                        <form action="#" method="POST">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="addNodeModalLabel">Informasi Perhitungan Estimasi Biaya</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <p>Perhitungan estimasi biaya distribusi dihitung berdasarkan jarak rute dengan ketentuan sebagai berikut:</p>
+                                                <ul>
+                                                    <li><strong>Jarak ≤ 5 km:</strong> Biaya tetap Rp10.000</li>
+                                                    <li><strong>Jarak 5–20 km:</strong> Tambahan Rp5.000 per km di atas 5 km</li>
+                                                    <li><strong>Jarak > 20 km:</strong> Tambahan Rp5.000/km untuk 6–20 km dan Rp10.000/km untuk km di atas 20</li>
+                                                </ul>
+                                                <p>Contoh:</p>
+                                                <ul>
+                                                    <li>Jarak 4 km → Biaya = Rp10.000</li>
+                                                    <li>Jarak 10 km → Biaya = Rp10.000 + (5 km × Rp5.000) = Rp35.000</li>
+                                                    <li>Jarak 25 km → Biaya = Rp10.000 + (15 × Rp5.000) + (5 × Rp10.000) = Rp135.000</li>
+                                                </ul>
+                                                <p>Biaya ini digunakan untuk estimasi logistik atau distribusi pada rute yang dipilih.</p>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
                             @endif
+
+                            <!-- Modal Penjelasan Estimasi Biaya -->
+                                
+
+
+
+
 
 
                             <div style="position: relative;">
@@ -159,15 +275,25 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Asal</label>
-                        <input type="text" class="form-control" id="asalInput" name="start_node"
-                            placeholder="Masukkan Kabupaten Asal" required
-                            value="{{ old('start_node', $start_node ?? '') }}">
+                        <select class="form-control" name="start_node" required>
+                            <option value="">-- Pilih Kabupaten Asal --</option>
+                            @foreach ($node as $n)
+                                <option value="{{ $n->name }}" {{ old('start_node', $start_node ?? '') == $n->name ? 'selected' : '' }}>
+                                    {{ $n->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Tujuan</label>
-                        <input type="text" class="form-control" id="tujuanInput" name="end_node"
-                            placeholder="Masukkan Kabupaten Tujuan" required
-                            value="{{ old('end_node', $end_node ?? '') }}">
+                       <select class="form-control" name="end_node" required>
+                            <option value="">-- Pilih Kabupaten Tujuan --</option>
+                            @foreach ($node as $n)
+                                <option value="{{ $n->name }}" {{ old('end_node', $end_node ?? '') == $n->name ? 'selected' : '' }}>
+                                    {{ $n->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Jenis Pangan</label>
@@ -363,7 +489,7 @@
         if (startNode && startPoint) {
             L.marker([startPoint.lat, startPoint.lng])
                 .addTo(map)
-                .bindPopup("Titik Awal: " + startNode.name)
+                .bindPopup("Titik Awal: " + startNode)
                 .openPopup();
         }
 
@@ -372,7 +498,7 @@
         if (endNode && endPoint) {
             L.marker([endPoint.lat, endPoint.lng])
                 .addTo(map)
-                .bindPopup("Titik Tujuan: " + endNode.name);
+                .bindPopup("Titik Tujuan: " + endNode);
         }
     }
 
@@ -380,7 +506,7 @@
         L.polyline(routeAlt.map(p => [p.lat, p.lng]), {
             color: 'red',
             weight: 3,
-            dashArray: '5, 10'
+            // dashArray: '5, 10'
         }).addTo(map).bindPopup("Rute Alternatif");
     }
 
@@ -411,4 +537,4 @@
     });
 </script>
 
-    @endsection
+@endsection

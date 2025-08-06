@@ -90,11 +90,11 @@
     <div class="container-fluid text-white border-top py-4 px-sm-3 px-md-5" style="border-color: #003366 !important; background-color:#003366;">
         <div class="row">
             <div class="col-lg-6 text-center text-md-left mb-3 mb-md-0">
-                <p class="m-0 text-warning">&copy; <a href="#" class="text-warning">Sistem Pemodelan Transportasi Pangan</a>. All Rights Reserved. 
+                <p class="m-0 text-warning">&copy; <a href="#" class="text-warning">2025 Sistem Pemodelan Transportasi Pangan</a>. 
 				
 				<!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
             </div>
-            <div class="col-lg-6 text-center text-md-right">
+            {{-- <div class="col-lg-6 text-center text-md-right">
                 <ul class="nav d-inline-flex">
                     <li class="nav-item">
                         <a class="nav-link text-white py-0" href="#">Privacy</a>
@@ -109,7 +109,7 @@
                         <a class="nav-link text-white py-0" href="#">Help</a>
                     </li>
                 </ul>
-            </div>
+            </div> --}}
         </div>
     </div>
     <!-- Footer End -->

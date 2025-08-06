@@ -15,18 +15,33 @@ class nodes extends Model
 
     protected $primarykey = 'id'; 
 
-    protected $fillable = ['name', 'latitude', 'longitude', 'category', 'roadname'];
+    protected $fillable = [ 'name', 
+                            'latitude', 
+                            'longitude', 
+                            'category', 
+                            'roadname'];
+                            
+    protected static function booted()
+    {
+        static::creating(function ($node) {
+            if (empty($node->category)) {
+                $node->category = 'land';
+            }
+        });
+    }
 
     // Definisikan relasi ke Edge sebagai sumber
     public function sourceEdges()
     {
         return $this->hasMany(edges::class, 'source', 'name');
+        //  return $this->hasMany(edges::class, 'source_id');
     }
 
     // Definisikan relasi ke Edge sebagai target
     public function targetEdges()
     {
         return $this->hasMany(edges::class, 'target', 'name');
+        // return $this->hasMany(edges::class, 'target_id');
     }
 
 

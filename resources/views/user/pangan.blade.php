@@ -23,7 +23,7 @@
 </div>
     
 <div class="container-fluid bg-secondary">
-    <div class="container">
+    
         <div class="row">
             <div class="col">
                 <div class="card mt-5 mb-5 shadow" style="border-radius: 20px;">
@@ -76,7 +76,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    
 </div>
 
 <script>
@@ -115,7 +115,7 @@
 
   async function loadChartData() {
       try {
-          const url = `{{ url('/Dashboard') }}?bulan={{ $filter_bulan }}&nama_pangan_id={{ $filter_pangan }}`;
+          const url = `{{ url('/Data-Pangan') }}?bulan={{ $filter_bulan }}&nama_pangan_id={{ $filter_pangan }}`;
           const response = await fetch(url, {
               headers: {
                   'X-Requested-With': 'XMLHttpRequest' // agar terdeteksi sebagai AJAX

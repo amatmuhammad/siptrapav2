@@ -13,7 +13,7 @@ class edges extends Model
     protected $table = 'edges';
 
     protected $fillable = ['source', 'target', 'distance'];
-
+    // protected $fillable = ['source_id', 'target_id', 'distance'];
     // Definisikan relasi ke Node sebagai sumber
     public function sourceNode()
     {

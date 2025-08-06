@@ -7,7 +7,9 @@
 <style>
     #map { 
         height: 480px;
-        border-radius: 10px;
+        width: 100%;
+        z-index: 1;
+        /* border-radius: 10px; */
     
     }
 
@@ -186,67 +188,62 @@
     ];
 @endphp
 
-<div id="customCardCarousel" class="carousel slide mt-5 mb-5" data-ride="carousel" data-interval="false">
-    <div class="carousel-inner">
+    <div id="customCardCarousel" class="carousel slide mt-5 mb-5" data-ride="carousel" data-interval="false">
+        <div class="carousel-inner">
 
-        @foreach (array_chunk($distributors, 2) as $index => $chunk)
-            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                <div class="d-flex justify-content-center flex-wrap">
-                    @foreach ($chunk as $dist)
-                        <div class="card mb-3 mx-2" style="max-width: 540px;">
-                            <div class="row no-gutters">
-                                <div class="col-md-4">
-                                    <img src="{{ asset($dist['image']) }}" class="img-fluid" alt="{{ $dist['name'] }}">
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ $dist['name'] }}</h5>
-                                        <p class="card-text">{{ $dist['description'] }}</p>
-                                        <p class="card-text"><small class="text-muted">{{ $dist['updated'] }}</small></p>
+            @foreach (array_chunk($distributors, 2) as $index => $chunk)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                    <div class="d-flex justify-content-center flex-wrap">
+                        @foreach ($chunk as $dist)
+                            <div class="card mb-3 mx-2" style="max-width: 540px;">
+                                <div class="row no-gutters">
+                                    <div class="col-md-4">
+                                        <img src="{{ asset($dist['image']) }}" class="img-fluid" alt="{{ $dist['name'] }}">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ $dist['name'] }}</h5>
+                                            <p class="card-text">{{ $dist['description'] }}</p>
+                                            <p class="card-text"><small class="text-muted">{{ $dist['updated'] }}</small></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
 
+        </div>
+
+        <!-- Navigasi -->
+        <a class="carousel-control-prev" href="#customCardCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#customCardCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
     </div>
 
-    <!-- Navigasi -->
-    <a class="carousel-control-prev" href="#customCardCarousel" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#customCardCarousel" role="button" data-slide="next">
-        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
+
 </div>
-
-
-    </div>
     
-<div class="container-fluid bg-secondary" >
-    <div class="container">
+<div class="container-fluid" >
+    
         <div class="row">
-            <div class="col-4">
-                <div class="text-center">
-                    <h2 class="text-primary mt-5">Matriks Distribusi Pangan</h2>
-                    <p class="text-justify">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magnam voluptates doloremque eum ipsa, nam reiciendis atque deserunt vel alias tenetur dolorum nihil dignissimos ea dolorem ad libero omnis quisquam cum minima obcaecati nostrum. Similique vero pariatur officiis quod voluptatum explicabo dolorum nesciunt laboriosam laborum architecto corporis eveniet id maxime fugit, magnam magni eligendi illum consectetur dolorem enim? At pariatur architecto excepturi tempore nam quia delectus suscipit harum ab magni provident, quod aliquid mollitia neque, voluptatibus fugit exercitationem iure. Odio necessitatibus vel quasi excepturi eum! Ad cupiditate dignissimos similique aut corrupti soluta, accusamus quidem beatae. Totam aspernatur cumque quia explicabo eius.</p>
-                </div>
-            </div>
-            <div class="col-8">
-                <div class="card mt-5 mb-5 shadow" style="border-radius: 20px;">
+            <div class="col">
+                <div class="card shadow mb-4 rounded-3">
                     <div class="card-body">
-                        <h4>Matriks Distribusi</h4>
-                        <div class="map" id="map"></div>
+                        <h4><strong>Matriks Distribusi</strong></h4>
+                        <div class="map rounded" id="map"></div>
+                        <div id="legend" style="padding:10px;"></div>        
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
 </div>
 
 

@@ -29,6 +29,7 @@ class UserController extends Controller
         return view('user.DashboardUser', compact('data','produsen','nama_pangan'));
     }
 
+    //function pangan -> grafik pangan
     public function pangan(Request $request){
         $nama_pangan = namaPangan::all();
 
@@ -38,7 +39,8 @@ class UserController extends Controller
                         ->pluck('bulan');
 
         $filter_pangan = $request->input('nama_pangan_id');
-        $filter_bulan = $request->input('bulan') ?? now()->format('Y-m');
+        // $filter_bulan = $request->input('bulan') ?? now()->format('Y-m');
+        $filter_bulan = $request->input('bulan') ?? ($bulanList->first() ?? now()->format('Y-m'));
 
         $query = Pangan::join('tbl_kabupaten as k', 'tbl_pangan.tujuan_pangan', '=', 'k.id')
             ->select('k.nama_kabupaten', DB::raw('SUM(tbl_pangan.volume) as total_volume'))
@@ -62,18 +64,35 @@ class UserController extends Controller
         return view('user.pangan', compact('data', 'filter_pangan', 'filter_bulan', 'nama_pangan', 'bulanList'));
     }
 
+    //function distribusi -> grafik distribusi
     public function Distribusi(){
         $dataDistribusi = pangan::with(['asalKabupaten', 'tujuanKabupaten', 'namaPangan'])->get();
         return view('user.GrafikDistribusi', compact('dataDistribusi'));
     }
-
-    public function Model(){
-        // $edge = edges::all();
-        // $node = nodes::all();
-        return view('user.modeltrans');
     
+    //modeltrans
+    public function Model(){
+        
+        $node = nodes::where(function($query) {
+            $query->where('name', 'LIKE', '%Kota%')
+                    ->orWhere('name', 'LIKE', '%Kabupaten%');
+        })->orderBy('name','desc')->get();
+
+        // dd($node);
+
+        return view('user.modeltrans',compact('node'));
     }
 
+    public function RefreshGraph()
+    {
+        Cache::forget('graph_coords');
+        Cache::forget('graph_edges');
+
+        return redirect()->route('Node')->with('success', 'Graph cache berhasil di-refresh!');
+    }
+
+
+    //function cuaca -> grafik cuaca
     public function Cuaca()
     {
         // API key langsung ditulis di sini (bukan dari .env)
@@ -141,10 +160,19 @@ class UserController extends Controller
             }
         }
 
+        $node = nodes::where(function($query) {
+            $query->where('name', 'LIKE', '%Kota%')
+                    ->orWhere('name', 'LIKE', '%Kabupaten%');
+        })->orderBy('name','desc')->get();
+
         $start = microtime(true);
 
         $source = $request->start_node;
         $target = $request->end_node;
+
+         // REFRESH CACHE (agar node/edge baru ikut digunakan)
+        // Cache::forget('graph_coords');
+        // Cache::forget('graph_edges');
 
         $nodes = Cache::rememberForever('graph_coords', function () {
             return nodes::all()->keyBy('name')->map(fn($n) => [
@@ -192,6 +220,25 @@ class UserController extends Controller
         [$altPath, $altDistance] = $this->bidirectionalAStar($source, $target, $nodes, $penalizedGraph);
         $ruteAlternatif = $this->formatCoords($altPath, $nodes);
 
+        $kecepatanKmh = 60;
+
+        $waktuTempuhJam = $totalDistance / $kecepatanKmh;
+        $waktuTempuhAlternatifJam = $altDistance / $kecepatanKmh;
+
+        $waktuTempuhUtama = [
+            'jam' => floor($waktuTempuhJam),
+            'menit' => round(($waktuTempuhJam - floor($waktuTempuhJam)) * 60)
+        ];
+
+        $waktuTempuhAlternatif = [
+            'jam' => floor($waktuTempuhAlternatifJam),
+            'menit' => round(($waktuTempuhAlternatifJam - floor($waktuTempuhAlternatifJam)) * 60)
+        ];
+
+        $biayaUtama = $this->hitungBiayaDistribusi($totalDistance);
+        $biayaAlternatif = $this->hitungBiayaDistribusi($altDistance);
+
+
         $executionTime = microtime(true) - $start;
 
         return view('user.modeltrans', [
@@ -207,9 +254,27 @@ class UserController extends Controller
             'cuaca' => $cuaca ?? null,
             'alert_level' => $alertLevel ?? null,
             'alert_message' => $alertMessage ?? null,
+            'node' => $node ?? null,
+            'waktu_tempuh' => $waktuTempuhUtama ?? null,
+            'waktu_tempuh_alt' => $waktuTempuhAlternatif ?? null,
+            'biaya_utama' => $biayaUtama ?? null,
+            'biaya_alternatif' => $biayaAlternatif ?? null,
+
         ]);
 
     }
+
+    private function hitungBiayaDistribusi($jarakKm)
+    {
+        if ($jarakKm <= 5) {
+            return 10000;
+        } elseif ($jarakKm <= 20) {
+            return 10000 + ($jarakKm - 5) * 5000;
+        } else {
+            return 10000 + (15 * 5000) + ($jarakKm - 20) * 10000;
+        }
+    }
+
 
     private function approxDistance($a, $b)
     {
@@ -217,6 +282,7 @@ class UserController extends Controller
         $dy = $a['lng'] - $b['lng'];
         return sqrt($dx * $dx + $dy * $dy);
     }
+
 
     // Function pemanggil bidirectional A* (reusable)
     private function bidirectionalAStar($source, $target, $nodes, $graph)
@@ -333,8 +399,6 @@ class UserController extends Controller
 
         return null;
     }
-
-
     //end
 
     public function clearRute(Request $request)
@@ -346,7 +410,7 @@ class UserController extends Controller
         ]);
     }
 
-
+    
 
 
 
