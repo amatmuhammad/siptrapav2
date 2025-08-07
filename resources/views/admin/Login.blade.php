@@ -16,7 +16,7 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="images/LOGO UHO 1.png" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -117,12 +117,11 @@
                 </div>
               </form>
 
-              {{-- <p class="text-center">
-                <span>Belum memiliki akun?</span>
-                <a href="{{ route('ViewRegister') }}">
-                  <span>Buat akun</span>
+              <p class="text-center">
+                <a href="{{ route('Beranda') }}">
+                  <span>Kembali Ke Halaman Home</span>
                 </a>
-              </p> --}}
+              </p>
             </div>
           </div>
           <!-- /Register -->
@@ -184,6 +183,6 @@
     <!-- Page JS -->
 
     <!-- Place this tag before closing body tag for github widget button. -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    {{-- <script async defer src="https://buttons.github.io/buttons.js"></script> --}}
   </body>
 </html>

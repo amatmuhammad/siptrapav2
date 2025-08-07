@@ -11,7 +11,7 @@
                     <a href="{{ route('Beranda') }}" class="nav-item nav-link {{ Request::is('Beranda') ? 'active' : '' }}">Beranda</a>
                     <a href="{{ route('Model') }}" class="nav-item nav-link {{ Request::is('Model-Transportasi') ? 'active' : '' }}">Model Transportasi</a>
                     <a href="{{ route('pangan') }}" class="nav-item nav-link {{ Request::is('Data-Pangan') ? 'active' : '' }}">Grafik Pangan</a>
-                    <a href="{{ route('Distribusi') }}" class="nav-item nav-link {{ Request::is('Distribusi') ? 'active' : '' }}">Grafik Distribusi</a>
+                    <a href="{{ route('Distribusi') }}" class="nav-item nav-link {{ Request::is('Distribusi') ? 'active' : '' }}">Matriks Distribusi</a>
                     <a href="{{ route('Cuaca') }}" class="nav-item nav-link {{ Request::is('Prakiraan-Cuaca') ? 'active' : '' }}">Cuaca</a>
                 </div>
                 {{-- <a href="" class="btn btn-primary py-2 px-4 d-none d-lg-block">Get A Quote</a> --}}

@@ -12,12 +12,12 @@
 <div class="container-fluid">
     <div class="row mb-5">
         <div class="col text-center">
-            <img src="{{ asset('assets2/images/pangan.png') }}" alt="image" style="width: 90%;">
+            <img src="{{ asset('assets2/images/pangan.png') }}" alt="image" style="width: 100%;">
         </div>
         <div class="col mt-5">
             <h4 class="text-primary">Distribusi Pangan</h4>
             <h1>Distribusi Pangan Sulawesi Tenggara</h1>
-            <p class="text-justify mb-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi placeat velit libero magni, ullam, voluptates sit quibusdam odit magnam natus officia accusamus excepturi voluptatem beatae architecto tenetur dolorum iure. Quidem, eaque architecto? Nobis tempora eaque minima incidunt quos, tenetur suscipit ut repudiandae nemo nesciunt fugiat odit velit quas, minus adipisci voluptatum nam deleniti facere! Voluptates ab aspernatur unde illo rem fugiat ea distinctio, fugit voluptatem earum molestias, aperiam excepturi temporibus est quaerat reprehenderit maxime, ex dolor ipsum. Hic dolores inventore eos rem facilis id nemo veniam nostrum, aut unde est ipsam, esse porro. Possimus et, consectetur cupiditate iusto veniam magnam.<p>
+            <p class="text-justify">Distribusi pangan di Provinsi Sulawesi Tenggara merupakan proses penting yang melibatkan pergerakan komoditas dari pusat produksi ke wilayah konsumsi, baik di daratan maupun kepulauan. Tantangan geografis seperti medan pegunungan dan penyebrangan laut menuntut sistem distribusi yang efisien, adaptif, dan responsif. Dengan pemanfaatan teknologi dan data real-time, proses distribusi dapat dipantau secara langsung, estimasi waktu tempuh dihitung secara akurat, serta rute dapat disesuaikan berdasarkan kondisi cuaca dan jalan, sehingga meningkatkan efisiensi logistik dan menjamin ketahanan pasokan pangan secara berkelanjutan di seluruh wilayah Sulawesi Tenggara.<p>
         </div>
     </div>
 </div>
@@ -33,19 +33,19 @@
                         <div class="row">
                             <div class="col-12 ms-auto">
                             <form method="GET" action="{{ route('pangan') }}" class="mb-4 row">
+                                    <div class="col-md-3 mb-2">
+                                        <label>Nama Pangan :</label>
+                                        <select name="nama_pangan_id" class="form-control rounded">
+                                            <option value="">--- Semua Pangan ---</option>
+                                            @foreach($nama_pangan as $np)
+                                                <option value="{{ $np->id }}" {{ $filter_pangan == $np->id ? 'selected' : '' }}>
+                                                    {{ $np->nama_pangan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 <div class="col-md-3 mb-2">
-                                    <label>Nama Pangan:</label>
-                                    <select name="nama_pangan_id" class="form-control rounded">
-                                        <option value="">--- Semua Pangan ---</option>
-                                        @foreach($nama_pangan as $np)
-                                            <option value="{{ $np->id }}" {{ $filter_pangan == $np->id ? 'selected' : '' }}>
-                                                {{ $np->nama_pangan }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-2">
-                                    <label>Bulan:</label>
+                                    <label>Bulan :</label>
                                     <select name="bulan" class="form-control rounded">
                                         <option value="">--- Pilih Bulan ---</option>
                                         @foreach($bulanList as $bulan)
@@ -60,12 +60,12 @@
                                 </div>
                             </form>
 
-                            </div>
                         </div>
+                    </div>
                         
                         @if ($data->isEmpty())
                             <div class="alert alert-warning">
-                            Data tidak ditemukan untuk filter yang dipilih.
+                                Data tidak ditemukan untuk filter yang dipilih.
                             </div>
                         @else
                             {{-- <canvas class="grafik" id="grafikKabupaten"></canvas> --}}

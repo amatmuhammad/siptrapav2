@@ -93,16 +93,73 @@ class UserController extends Controller
 
 
     //function cuaca -> grafik cuaca
-    public function Cuaca()
+    // public function Cuaca(Request $request)
+    // {
+    //     $kabupaten = kabupaten::all();
+
+    //     if (!$request->has('kabupaten')) {
+    //         return view('user.Grafikcuaca', ['weatherData' => collect(), 'kabupaten' => $kabupaten]);
+    //     }
+
+    //     // Pecah latitude dan longitude dari string "lat,lon"
+    //     [$latitude, $longitude] = explode(',', $request->kabupaten);
+
+    //     // API key langsung ditulis di sini (bukan dari .env)
+    //     $apiKey = 'e762ceb9eca042e9fe87def18486d804';
+
+    //     $response = Http::get("https://api.openweathermap.org/data/2.5/forecast", [
+    //         // 'q' => $city,
+    //         'lat' => $latitude,
+    //         'lon' => $longitude,
+    //         'appid' => $apiKey,
+    //         'units' => 'metric'
+    //     ]);
+
+    //     if ($response->successful()) {
+    //         $data = $response->json();
+
+    //         $now = Carbon::now();
+    //         $threeDaysLater = $now->copy()->addDays(3);
+
+    //         $weatherData = collect($data['list'])->filter(function ($item) use ($now, $threeDaysLater) {
+    //             $dt = Carbon::parse($item['dt_txt']);
+    //             return $dt->between($now, $threeDaysLater);
+    //         })->map(function ($item) {
+    //             return [
+    //                 'time' => $item['dt_txt'],
+    //                 'temp' => $item['main']['temp'],
+    //                 'humidity' => $item['main']['humidity'],
+    //                 'wind' => $item['wind']['speed'],
+    //                 'rain' => $item['rain']['3h'] ?? 0,
+    //                 'weather' => $item['weather'][0]['description'],
+    //             ];
+    //         });
+
+    //         return view('user.Grafikcuaca', [
+    //             'weatherData' => $weatherData
+    //         ]);
+    //     }
+
+    //     return view('user.Grafikcuaca', ['weatherData' => collect(), 'kabupaten' => $kabupaten]);
+    // }
+
+    public function Cuaca(Request $request)
     {
-        // API key langsung ditulis di sini (bukan dari .env)
+        $kabupaten = kabupaten::all();
+
+        if (!$request->has('kabupaten')) {
+            // Saat halaman dibuka pertama kali, belum ada kabupaten dipilih
+            return view('user.Grafikcuaca', [
+                'weatherData' => collect(),
+                'kabupaten' => $kabupaten
+            ]);
+        }
+
+        [$latitude, $longitude] = explode(',', $request->kabupaten);
+
         $apiKey = 'e762ceb9eca042e9fe87def18486d804';
-        // $city = 'Makassar';
-        $latitude = -4.009557527322553;
-        $longitude = 122.52050303886116;
 
         $response = Http::get("https://api.openweathermap.org/data/2.5/forecast", [
-            // 'q' => $city,
             'lat' => $latitude,
             'lon' => $longitude,
             'appid' => $apiKey,
@@ -130,12 +187,18 @@ class UserController extends Controller
             });
 
             return view('user.Grafikcuaca', [
-                'weatherData' => $weatherData
+                'weatherData' => $weatherData,
+                'kabupaten' => $kabupaten
             ]);
         }
 
-        return view('user.Grafikcuaca', ['weatherData' => collect()]);
+        // Jika API gagal
+        return view('user.Grafikcuaca', [
+            'weatherData' => collect(),
+            'kabupaten' => $kabupaten
+        ]);
     }
+
 
 
     //bidirectional a star with a star alternatif
@@ -169,10 +232,6 @@ class UserController extends Controller
 
         $source = $request->start_node;
         $target = $request->end_node;
-
-         // REFRESH CACHE (agar node/edge baru ikut digunakan)
-        // Cache::forget('graph_coords');
-        // Cache::forget('graph_edges');
 
         $nodes = Cache::rememberForever('graph_coords', function () {
             return nodes::all()->keyBy('name')->map(fn($n) => [

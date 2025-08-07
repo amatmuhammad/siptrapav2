@@ -74,8 +74,9 @@
     <div class="container-fluid">
         <div class="container">
             <div class="text-center pb-2">
-                <h1 class="text-primary"> Model Transportasi</h1>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum nihil nostrum necessitatibus voluptatum, qui at nam veniam placeat quod animi exercitationem tenetur repellat iusto? Facere, consequuntur repellat repudiandae eius ab fuga excepturi incidunt veniam nulla sunt. Cupiditate iure mollitia amet?</p>
+                <h1 class="text-primary"> Model Distribusi Pangan</h1>
+                <p>Model transportasi yang digunakan dalam sistem ini dirancang untuk mendukung distribusi pangan secara efisien, adaptif, dan berbasis data real-time. Sistem memanfaatkan algoritma pemetaan rute cerdas yang mempertimbangkan berbagai faktor seperti kondisi cuaca, jarak tempuh, waktu tempuh, serta ketersediaan jalur alternatif.
+Dengan pendekatan ini, proses distribusi dapat dilakukan secara lebih cepat dan tepat, sekaligus meminimalkan risiko keterlambatan atau gangguan selama perjalanan. Model ini juga fleksibel dan dapat disesuaikan dengan kebutuhan logistik di berbagai wilayah, baik daratan maupun kepulauan.</p>
             </div>
         </div>
     </div>
@@ -85,7 +86,7 @@
                 <div class="col">
                     <div class="card mb-5 shadow rounded-3" style="border-radius: 10px;">
                         <div class="card-body">
-                            <h4 class="mb-4">Peta Pemodelan Transportasi </h4>
+                            <h4 class="mb-4">Peta Pemodelan Distribusi Pangan </h4>
                             <hr style="border: 2px solid rgb(225, 225, 225);">
                             {{-- @if (isset($cuaca))
                                 <div class="alert alert-{{ $alert_level }} mt-3">

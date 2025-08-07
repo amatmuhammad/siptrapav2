@@ -33,61 +33,6 @@
             <div class="card">
               <h3 class="card-header"><b>Data Node</b><hr style="border: 2px solid rgb(225, 225, 225);"></h3>
                 <div class="card-body">
-                    {{-- <div class="row justify-content-between">
-                      <div class="col">
-                        <span class="me-1">Show Data</span>
-                                <form method="GET" action="{{ route('Node') }}">
-                                  <select name="show_entries" class="form-control" onchange="this.form.submit()" style="width: auto;">
-                                      <option value="10" {{ request()->get('show_entries') == 10 ? 'selected' : '' }}>10</option>
-                                      <option value="25" {{ request()->get('show_entries') == 25 ? 'selected' : '' }}>25</option>
-                                      <option value="50" {{ request()->get('show_entries') == 50 ? 'selected' : '' }}>50</option>
-                                      <option value="100" {{ request()->get('show_entries') == 100 ? 'selected' : '' }}>100</option>
-                                  </select>
-                                </form>
-                                <form action="{{ route('Node') }}" method="GET" >
-                                  <label for="Search">Cari Node</label>
-                                  <input type="text" class="form-control" name="search" id="search" placeholder="Cari Data Node..." value="{{ request()->get('search', session('search_node')) }}" />
-                                </form>
-                        </div>
-                        <div class="col-md-4 mb-5">
-                          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNodeModal">
-                              Tambah Node
-                          </button>
-
-                        </div>
-                        
-                    </div> --}}
-{{-- justify-content-between --}}
-                    {{-- <div class="row  align-items-end mb-5">
-                      <!-- Show Entries + Search -->
-                      <div class="col-md-7">
-                          <form method="GET" action="{{ route('Node') }}" class="d-flex align-items-center flex-wrap gap-2">
-                              <!-- Show Entries -->
-                              <label for="show_entries" class="me-2">Show : </label>
-                              <select name="show_entries" id="show_entries" class="form-control w-auto me-2" onchange="this.form.submit()">
-                                  <option value="10" {{ request()->get('show_entries') == 10 ? 'selected' : '' }}>10</option>
-                                  <option value="25" {{ request()->get('show_entries') == 25 ? 'selected' : '' }}>25</option>
-                                  <option value="50" {{ request()->get('show_entries') == 50 ? 'selected' : '' }}>50</option>
-                                  <option value="100" {{ request()->get('show_entries') == 100 ? 'selected' : '' }}>100</option>
-                              </select>
-                              <span class="me-2">Cari : </span>
-
-                              <!-- Search -->
-                              <input type="text" name="search" class="form-control w-auto me-2" placeholder="Cari Node..." value="{{ request()->get('search', session('search_node')) }}">
-                              <button type="submit" class="btn btn-info">Cari</button>
-                          </form>
-                      </div>
-
-                      <!-- Tombol Tambah Node -->
-                      <div class="col-2 ">
-                        <div class="button-tambah">
-                          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNodeModal">
-                              + Node
-                          </button>
-                        </div>
-                      </div>
-                  </div> --}}
-
                   <div class="row align-items-end mb-5">
                       <!-- Show Entries + Search -->
                       <div class="col-md-7">

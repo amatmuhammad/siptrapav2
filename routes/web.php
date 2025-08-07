@@ -70,7 +70,7 @@ Route::get('/Beranda', [UserController::class, 'Beranda'])->name('Beranda');
 Route::get('/Data-Pangan', [UserController::class, 'pangan'])->name('pangan');
 Route::get('/Distribusi', [UserController::class, 'Distribusi'])->name('Distribusi');
 Route::get('/Prakiraan-Cuaca', [UserController::class, 'Cuaca'])->name('Cuaca');
-Route::get('/Prakiraan-Cuaca', [UserController::class, 'Cuaca'])->name('Cuaca');
+// Route::get('/Prakiraan-Cuaca', [UserController::class, 'Cuaca'])->name('Cuaca');
 Route::get('/Model-Transportasi', [UserController::class, 'Model'])->name('Model');
 Route::post('/Model-Transportasi/Cari-rute', [UserController::class, 'cariRute'])->name('cariRute');
 Route::post('/Model-Transportasi/Clear', [UserController::class, 'clearRute'])->name('clearRute');

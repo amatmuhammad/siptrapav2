@@ -6,7 +6,7 @@
 
 <style>
     #map { 
-        height: 480px;
+        height: 580px;
         width: 100%;
         z-index: 1;
         /* border-radius: 10px; */
@@ -42,11 +42,11 @@
 {{-- jumbotron --}}
     <div class="jumbotron jumbotron-fluid mb-5">
         <div class="container text-center py-5">
-            <h1 class="text-primary display-3">Data Distribusi</h1>
+            <h1 class="text-primary display-3">Matriks Distribusi Pangan</h1>
             <div class="d-inline-flex align-items-center text-white">
                 <p class="m-0"><a class="text-white" href="">Home</a></p>
                 <i class="fa fa-circle px-3"></i>
-                <p class="m-0">Grafik Distribusi</p>
+                <p class="m-0">Matriks Distribusi Pangan</p>
             </div>
         </div>
     </div>
@@ -54,106 +54,12 @@
 
 
     <div class="container-fluid">
-        <div class="text-center">
-            <h1>Data Distributor Pangan Sulawesi Tenggara</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum illo facilis veritatis quam molestias animi fugit quo, eveniet similique! Corporis iure perspiciatis, inventore doloremque molestiae cumque explicabo quae consequuntur quibusdam? Numquam veritatis voluptatem, accusamus voluptas mollitia vel dolores eos repellat dicta! Ratione, repellat delectus ad doloremque eius ea veritatis nobis.</p>
+        <div class="text-center mb-5">
+            <h1>Matriks Distribusi Pangan Sulawesi Tanggara</h1>
+            <p>Matriks distribusi pangan pada sistem ini divisualisasikan melalui peta interaktif yang menampilkan marker sebagai titik asal dan tujuan distribusi, serta polyline sebagai jalur penghubung antar wilayah. Setiap garis (polyline) merepresentasikan hubungan logistik antara satu daerah dengan daerah lainnya, menunjukkan rute pengiriman pangan berdasarkan data aktual. Pendekatan ini memberikan gambaran visual yang jelas mengenai alur distribusi, memudahkan analisis efisiensi jalur, serta mendukung pengambilan keputusan dalam pengelolaan distribusi pangan secara lebih cepat, responsif, dan berbasis lokasi di wilayah Sulawesi Tenggara.</p>
         </div>
 
-        {{-- <div id="customCardCarousel" class="carousel slide mt-5 mb-5" data-ride="carousel">
-            <div class="carousel-inner">
-
-                    <!-- Slide 1 -->
-                    <div class="carousel-item active">
-                    <div class="d-flex justify-content-center flex-wrap">
-                        <div class="card mb-3 mx-2" style="max-width: 540px;">
-                        <div class="row no-gutters">
-                            <div class="col-md-4">
-                            <img src="{{ asset('assets2/images/Baubau.png') }}" class="img-fluid" alt="...">
-                            </div>
-                            <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">PT. Buton Raya Pangan</h5>
-                                <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda, eius?</p>
-                                <p class="card-text"><small class="text-muted">Last updated 1 min ago</small></p>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-
-                        <div class="card mb-3 mx-2" style="max-width: 540px;">
-                        <div class="row no-gutters">
-                            <div class="col-md-4">
-                            <img src="{{ asset('assets2/images/muna.png') }}" class="img-fluid" alt="...">
-                            </div>
-                            <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">PT. Muna Pangan Berseri</h5>
-                                <p class="card-text">Isi konten card 2.</p>
-                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-
-                    </div>
-                    </div>
-
-                    <!-- Slide 2 -->
-                    <div class="carousel-item">
-                    <div class="d-flex justify-content-center flex-wrap">
-                        <div class="card mb-3 mx-2" style="max-width: 540px;">
-                        <div class="row no-gutters">
-                            <div class="col-md-4">
-                            <img src="{{ asset('assets2/images/Baubau.png') }}" class="img-fluid" alt="...">
-                            </div>
-                            <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">PT. Kolaka Cipta pangan</h5>
-                                <p class="card-text">Isi konten card 3.</p>
-                                <p class="card-text"><small class="text-muted">Last updated 5 mins ago</small></p>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-
-                        <div class="card mb-3 mx-2" style="max-width: 540px;">
-                        <div class="row no-gutters">
-                            <div class="col-md-4">
-                            <img src="{{ asset('assets2/images/Baubau.png') }}" class="img-fluid" alt="...">
-                            </div>
-                            <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">CV. Beras abadi</h5>
-                                <p class="card-text">Isi konten card 4.</p>
-                                <p class="card-text"><small class="text-muted">Last updated 6 mins ago</small></p>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-
-                        <div class="card mb-3 mx-2" style="max-width: 540px;">
-                        <div class="row no-gutters">
-                            <div class="col-md-4">
-                            <img src="{{ asset('assets2/images/Baubau.png') }}" class="img-fluid" alt="...">
-                            </div>
-                            <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">Konawe Pangan</h5>
-                                <p class="card-text">Isi konten card 5.</p>
-                                <p class="card-text"><small class="text-muted">Last updated 8 mins ago</small></p>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-
-                    </div>
-                    </div>
-
-            </div>
-
-        </div> --}}
-
-@php
+{{-- @php
     $distributors = [
         [
             'name' => 'PT. Buton Raya Pangan',
@@ -225,12 +131,12 @@
             <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
             <span class="sr-only">Next</span>
         </a>
-    </div>
+    </div> --}}
 
 
 </div>
     
-<div class="container-fluid" >
+<div class="container-fluid mt-4" >
     
         <div class="row">
             <div class="col">

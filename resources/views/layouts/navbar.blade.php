@@ -38,7 +38,7 @@
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <h6 class="mb-0">John Doe</h6>
+                            <h5 class="mb-0">{{ Auth::user()->username }}</h5>
                             <small class="text-body-secondary">Admin</small>
                           </div>
                         </div>
