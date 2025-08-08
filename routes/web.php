@@ -72,7 +72,7 @@ Route::get('/Distribusi', [UserController::class, 'Distribusi'])->name('Distribu
 Route::get('/Prakiraan-Cuaca', [UserController::class, 'Cuaca'])->name('Cuaca');
 // Route::get('/Prakiraan-Cuaca', [UserController::class, 'Cuaca'])->name('Cuaca');
 Route::get('/Model-Transportasi', [UserController::class, 'Model'])->name('Model');
-Route::post('/Model-Transportasi/Carirute', [UserController::class, 'cariRute'])->name('cariRute');
+Route::post('/Model-Transportasi/CariRute', [UserController::class, 'cariRute'])->name('cariRute');
 Route::post('/Model-Transportasi/Clear', [UserController::class, 'clearRute'])->name('clearRute');
 
 // Route::get('/jalur-alternatif', [UserController::class, 'jalurAlternatif'])->name('jalurAlternatif');
