@@ -97,7 +97,7 @@ class AdminController extends Controller
             'search' => $search
         ]);
 
-        return view('admin.Node', compact('strapa', 'showEntries', 'search'));
+        return view('admin.node', compact('strapa', 'showEntries', 'search'));
     }
 
     public function storeNode(Request $request)
