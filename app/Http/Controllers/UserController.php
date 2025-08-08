@@ -300,6 +300,8 @@ class UserController extends Controller
 
         $executionTime = microtime(true) - $start;
 
+        dd("starnode : ".$source, "endnode : ".$target);
+
         return view('user.modeltrans', [
             'rute' => $ruteUtama ?? [],
             'jalur_alternatif' => $ruteAlternatif ?? [],
