@@ -38,8 +38,8 @@
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <h5 class="mb-0">{{ Auth::user()->username }}</h5>
-                            <small class="text-body-secondary">Admin</small>
+                            <h5 class="mt-2">{{ Auth::user()->username }}</h5>
+                            {{-- <small class="text-body-secondary">Admin</small> --}}
                           </div>
                         </div>
                       </a>

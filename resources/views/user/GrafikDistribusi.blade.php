@@ -149,7 +149,6 @@
                 </div>
             </div>
         </div>
-
 </div>
 
 
@@ -213,12 +212,12 @@
         // Marker asal
         L.marker([from.latitude, from.longitude])
             .addTo(map)
-            .bindPopup("Asal: " + from.nama_kabupaten);
+            .bindPopup(from.nama_kabupaten);
 
         // Marker tujuan
         L.marker([to.latitude, to.longitude])
             .addTo(map)
-            .bindPopup("Tujuan: " + to.nama_kabupaten);
+            .bindPopup(to.nama_kabupaten);
 
         // Garis distribusi
         L.polyline([
