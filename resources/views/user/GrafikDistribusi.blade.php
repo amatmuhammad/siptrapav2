@@ -212,12 +212,12 @@
         // Marker asal
         L.marker([from.latitude, from.longitude])
             .addTo(map)
-            .bindPopup(from.nama_kabupaten);
+            .bindPopup(nama_kabupaten);
 
         // Marker tujuan
         L.marker([to.latitude, to.longitude])
             .addTo(map)
-            .bindPopup(to.nama_kabupaten);
+            .bindPopup(nama_kabupaten);
 
         // Garis distribusi
         L.polyline([
