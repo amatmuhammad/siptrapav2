@@ -181,35 +181,55 @@ class UserController extends Controller
         $source = $request->start_node;
         $target = $request->end_node;
 
-        // Ambil nodes dan mapping id ke name sekaligus cache
-        list($nodes, $idToName) = Cache::rememberForever('graph_coords_and_map', function () {
-            $allNodes = nodes::all();
-            $idToName = [];
-            $nodes = [];
+        // // Ambil nodes dan mapping id ke name sekaligus cache
+        // list($nodes, $idToName) = Cache::rememberForever('graph_coords_and_map', function () {
+        //     $allNodes = nodes::all();
+        //     $idToName = [];
+        //     $nodes = [];
 
-            foreach ($allNodes as $n) {
-                $idToName[$n->id] = $n->name;
-                $nodes[$n->name] = ['lat' => $n->latitude, 'lng' => $n->longitude];
-            }
+        //     foreach ($allNodes as $n) {
+        //         $idToName[$n->id] = $n->name;
+        //         $nodes[$n->name] = ['lat' => $n->latitude, 'lng' => $n->longitude];
+        //     }
 
-            return [$nodes, $idToName];
+        //     return [$nodes, $idToName];
+        // });
+
+        // // Load edges dengan key berdasarkan nama node, bukan ID
+        // $originalGraph = Cache::rememberForever('graph_edges', function () use ($idToName) {
+        //     $edges = edges::all();
+        //     $g = [];
+
+        //     foreach ($edges as $e) {
+        //         $sourceName = $idToName[$e->source] ?? null;
+        //         $targetName = $idToName[$e->target] ?? null;
+
+        //         if ($sourceName && $targetName) {
+        //             $g[$sourceName][] = ['to' => $targetName, 'cost' => $e->distance];
+        //             $g[$targetName][] = ['to' => $sourceName, 'cost' => $e->distance];
+        //         }
+        //     }
+
+        //     return $g;
+        // });
+
+        // if (!isset($nodes[$source]) || !isset($nodes[$target])) {
+        //     return back()->with('error', 'Node tidak ditemukan.');
+        // }
+        $nodes = Cache::rememberForever('graph_coords', function () {
+            return nodes::all()->keyBy('name')->map(fn($n) => [
+                'lat' => $n->latitude,
+                'lng' => $n->longitude,
+            ])->toArray();
         });
 
-        // Load edges dengan key berdasarkan nama node, bukan ID
-        $originalGraph = Cache::rememberForever('graph_edges', function () use ($idToName) {
+        $originalGraph = Cache::rememberForever('graph_edges', function () {
             $edges = edges::all();
             $g = [];
-
             foreach ($edges as $e) {
-                $sourceName = $idToName[$e->source] ?? null;
-                $targetName = $idToName[$e->target] ?? null;
-
-                if ($sourceName && $targetName) {
-                    $g[$sourceName][] = ['to' => $targetName, 'cost' => $e->distance];
-                    $g[$targetName][] = ['to' => $sourceName, 'cost' => $e->distance];
-                }
+                $g[$e->source][] = ['to' => $e->target, 'cost' => $e->distance];
+                $g[$e->target][] = ['to' => $e->source, 'cost' => $e->distance];
             }
-
             return $g;
         });
 
