@@ -225,24 +225,6 @@ class AdminController extends Controller
 
     }
 
-    // public function updateEdge(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'source' => 'required|exists:nodes,name',
-    //         'target' => 'required|exists:nodes,name',
-    //         // 'distance' => 'required|numeric|min:0', // tidak divalidasi
-    //     ]);
-
-    //     $edge = edges::findOrFail($id);
-    //     $edge->update([
-    //         'source' => $request->source,
-    //         'target' => $request->target,
-    //         // 'distance' => $request->distance, // tidak diubah
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Data edge berhasil diperbarui.');
-    // }
-
 
     public function login(){
         return view('admin.Login');

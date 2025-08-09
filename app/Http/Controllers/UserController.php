@@ -92,56 +92,7 @@ class UserController extends Controller
     }
 
 
-    //function cuaca -> grafik cuaca
-    // public function Cuaca(Request $request)
-    // {
-    //     $kabupaten = kabupaten::all();
-
-    //     if (!$request->has('kabupaten')) {
-    //         return view('user.Grafikcuaca', ['weatherData' => collect(), 'kabupaten' => $kabupaten]);
-    //     }
-
-    //     // Pecah latitude dan longitude dari string "lat,lon"
-    //     [$latitude, $longitude] = explode(',', $request->kabupaten);
-
-    //     // API key langsung ditulis di sini (bukan dari .env)
-    //     $apiKey = 'e762ceb9eca042e9fe87def18486d804';
-
-    //     $response = Http::get("https://api.openweathermap.org/data/2.5/forecast", [
-    //         // 'q' => $city,
-    //         'lat' => $latitude,
-    //         'lon' => $longitude,
-    //         'appid' => $apiKey,
-    //         'units' => 'metric'
-    //     ]);
-
-    //     if ($response->successful()) {
-    //         $data = $response->json();
-
-    //         $now = Carbon::now();
-    //         $threeDaysLater = $now->copy()->addDays(3);
-
-    //         $weatherData = collect($data['list'])->filter(function ($item) use ($now, $threeDaysLater) {
-    //             $dt = Carbon::parse($item['dt_txt']);
-    //             return $dt->between($now, $threeDaysLater);
-    //         })->map(function ($item) {
-    //             return [
-    //                 'time' => $item['dt_txt'],
-    //                 'temp' => $item['main']['temp'],
-    //                 'humidity' => $item['main']['humidity'],
-    //                 'wind' => $item['wind']['speed'],
-    //                 'rain' => $item['rain']['3h'] ?? 0,
-    //                 'weather' => $item['weather'][0]['description'],
-    //             ];
-    //         });
-
-    //         return view('user.Grafikcuaca', [
-    //             'weatherData' => $weatherData
-    //         ]);
-    //     }
-
-    //     return view('user.Grafikcuaca', ['weatherData' => collect(), 'kabupaten' => $kabupaten]);
-    // }
+    //
 
     public function Cuaca(Request $request)
     {
@@ -201,14 +152,11 @@ class UserController extends Controller
 
 
 
-    //bidirectional a star with a star alternatif
     public function cariRute(Request $request)
     {
         $jenisPangan = $request->input('jenis_pangan');
         $volume = $request->input('volume');
-        // $cuaca = $this->cekCuacaJikaBuah($jenisPangan);
         $cuaca = $this->cekCuacaJikaBuah($request->end_node);
-
 
         if ($cuaca) {
             $alertLevel = 'success'; // default: cuaca baik
@@ -223,30 +171,45 @@ class UserController extends Controller
             }
         }
 
-        $node = nodes::where(function($query) {
+        $node = nodes::where(function ($query) {
             $query->where('name', 'LIKE', '%Kota%')
-                    ->orWhere('name', 'LIKE', '%Kabupaten%');
-        })->orderBy('name','desc')->get();
+                ->orWhere('name', 'LIKE', '%Kabupaten%');
+        })->orderBy('name', 'desc')->get();
 
         $start = microtime(true);
 
         $source = $request->start_node;
         $target = $request->end_node;
 
-        $nodes = Cache::rememberForever('graph_coords', function () {
-            return nodes::all()->keyBy('name')->map(fn($n) => [
-                'lat' => $n->latitude,
-                'lng' => $n->longitude,
-            ])->toArray();
+        // Ambil nodes dan mapping id ke name sekaligus cache
+        list($nodes, $idToName) = Cache::rememberForever('graph_coords_and_map', function () {
+            $allNodes = nodes::all();
+            $idToName = [];
+            $nodes = [];
+
+            foreach ($allNodes as $n) {
+                $idToName[$n->id] = $n->name;
+                $nodes[$n->name] = ['lat' => $n->latitude, 'lng' => $n->longitude];
+            }
+
+            return [$nodes, $idToName];
         });
 
-        $originalGraph = Cache::rememberForever('graph_edges', function () {
+        // Load edges dengan key berdasarkan nama node, bukan ID
+        $originalGraph = Cache::rememberForever('graph_edges', function () use ($idToName) {
             $edges = edges::all();
             $g = [];
+
             foreach ($edges as $e) {
-                $g[$e->source][] = ['to' => $e->target, 'cost' => $e->distance];
-                $g[$e->target][] = ['to' => $e->source, 'cost' => $e->distance];
+                $sourceName = $idToName[$e->source] ?? null;
+                $targetName = $idToName[$e->target] ?? null;
+
+                if ($sourceName && $targetName) {
+                    $g[$sourceName][] = ['to' => $targetName, 'cost' => $e->distance];
+                    $g[$targetName][] = ['to' => $sourceName, 'cost' => $e->distance];
+                }
             }
+
             return $g;
         });
 
@@ -297,32 +260,27 @@ class UserController extends Controller
         $biayaUtama = $this->hitungBiayaDistribusi($totalDistance);
         $biayaAlternatif = $this->hitungBiayaDistribusi($altDistance);
 
-
         $executionTime = microtime(true) - $start;
 
-        // dd("starnode : ".$source, "endnode : ".$target);
-
         return view('user.modeltrans', [
-            'rute' => $ruteUtama ?? [],
-            'jalur_alternatif' => $ruteAlternatif ?? [],
-            'distance_km' => isset($totalDistance) ? round($totalDistance, 2) : null,
-            'distance_alt_km' => isset($altDistance) ? round($altDistance, 2) : null,
-            'execution_time' => $executionTime ?? null,
-            'start_node' => $source ?? null,
-            'end_node' => $target ?? null,
-            'jenis_pangan' => $jenisPangan ?? null,
-            'volume' => $volume ?? null,
-            'cuaca' => $cuaca ?? null,
-            'alert_level' => $alertLevel ?? null,
-            'alert_message' => $alertMessage ?? null,
-            'node' => $node ?? null,
-            'waktu_tempuh' => $waktuTempuhUtama ?? null,
-            'waktu_tempuh_alt' => $waktuTempuhAlternatif ?? null,
-            'biaya_utama' => $biayaUtama ?? null,
-            'biaya_alternatif' => $biayaAlternatif ?? null,
-
+            'rute'              => $ruteUtama ?? [],
+            'jalur_alternatif'  => $ruteAlternatif ?? [],
+            'distance_km'       => isset($totalDistance) ? round($totalDistance, 2) : null,
+            'distance_alt_km'   => isset($altDistance) ? round($altDistance, 2) : null,
+            'execution_time'    => $executionTime ?? null,
+            'start_node'        => $source ?? null,
+            'end_node'          => $target ?? null,
+            'jenis_pangan'      => $jenisPangan ?? null,
+            'volume'            => $volume ?? null,
+            'cuaca'             => $cuaca ?? null,
+            'alert_level'       => $alertLevel ?? null,
+            'alert_message'     => $alertMessage ?? null,
+            'node'              => $node ?? null,
+            'waktu_tempuh'      => $waktuTempuhUtama ?? null,
+            'waktu_tempuh_alt'  => $waktuTempuhAlternatif ?? null,
+            'biaya_utama'       => $biayaUtama ?? null,
+            'biaya_alternatif'  => $biayaAlternatif ?? null,
         ]);
-
     }
 
     private function hitungBiayaDistribusi($jarakKm)
