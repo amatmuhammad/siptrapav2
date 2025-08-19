@@ -215,8 +215,8 @@ class UserController extends Controller
 
         $kecepatanKmh = 60;
 
-        $waktuTempuhJam = $totalDistance / $kecepatanKmh + 4;
-        $waktuTempuhAlternatifJam = $altDistance / $kecepatanKmh + 4;
+        $waktuTempuhJam = $totalDistance / $kecepatanKmh + 1.5;
+        $waktuTempuhAlternatifJam = $altDistance / $kecepatanKmh + 1.5;
 
         $waktuTempuhUtama = [
             'jam' => floor($waktuTempuhJam),
