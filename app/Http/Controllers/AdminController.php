@@ -54,8 +54,6 @@ class AdminController extends Controller
         return view('admin.Dashboard', compact('data', 'filter_pangan', 'filter_bulan', 'nama_pangan', 'bulanList'));
     }
 
-
-
     public function persebaran()
     {
         $dataDistribusi = pangan::with(['asalKabupaten', 'tujuanKabupaten', 'namaPangan'])->get();
@@ -97,7 +95,7 @@ class AdminController extends Controller
             'search' => $search
         ]);
 
-        return view('admin.node', compact('strapa', 'showEntries', 'search'));
+        return view('admin.Node', compact('strapa', 'showEntries', 'search'));
     }
 
     public function storeNode(Request $request)
@@ -225,14 +223,10 @@ class AdminController extends Controller
 
     }
 
-
     public function login(){
         return view('admin.Login');
     }
 
-    public function ViewRegister(){
-        return view('admin.Register');
-    }
 
     public function produsen(Request $request)
     {
@@ -292,14 +286,18 @@ class AdminController extends Controller
         return redirect()->route('produsen')->with('success', 'Data distributor berhasil dihapus.');
     }
 
-    public function panganadmin(){
+    public function panganadmin(Request $request){
 
-        $strapa = pangan::with(['namaPangan', 'asalKabupaten', 'produsen', 'tujuanKabupaten'])->paginate(10);
+        // $strapa = pangan::with(['namaPangan', 'asalKabupaten', 'produsen', 'tujuanKabupaten'])->paginate(10);
+        $showEntries = $request->get('show_entries', 10);
         $namaPangan = namaPangan::all();
         $kabupaten = kabupaten::all();
         $produsen = produsen::all();
 
-        // dd($nama_pangan);
+        // Ambil data sesuai show_entries
+        $strapa = pangan::with(['namaPangan', 'asalKabupaten', 'produsen', 'tujuanKabupaten'])->paginate($showEntries)->appends([
+            'show_entries' => $showEntries,
+        ]);
 
         // dd($strapa);
 
@@ -325,8 +323,6 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Data pangan berhasil ditambahkan');
     }
-
-
 
     public function updatepangan(Request $request, $id)
     {
@@ -374,8 +370,12 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data pangan berhasil dihapus');
     }
 
-    public function kabupaten(){
-        $strapa = kabupaten::paginate(10);
+    public function kabupaten(Request $request){
+        $showEntries = $request->get('show_entries', 10);
+        // $strapa = kabupaten::paginate(10);
+        $strapa = kabupaten::paginate($showEntries)->appends([
+            'show_entries' => $showEntries,
+        ]);
 
         return view('admin.kabupaten', compact('strapa'));
     }
@@ -459,8 +459,11 @@ class AdminController extends Controller
         return redirect()->route('kabupaten')->with('success', 'Data Kabupaten Berhasil Di hapus');
     }
 
-    public function namaPangan(){
-        $strapa = namaPangan::paginate(10);
+    public function namaPangan(Request $request){
+        $showEntries = $request->get('show_entries', 10);
+        $strapa = namaPangan::paginate($showEntries)->appends([
+            'show_entries' => $showEntries,
+        ]);
 
         return view('admin.namaPangan', compact('strapa'));
     }
@@ -494,7 +497,5 @@ class AdminController extends Controller
         $namaPangan->delete();
         return redirect()->route('namaPangan')->with('success', 'Nama Pangan Berhasil Di hapus');
     }
-
-    
 
 }

@@ -114,26 +114,27 @@
                                     <div class="col-md-4 mb-2">
                                         <ul>
                                             <li><strong>Hujan:</strong> {{ $cuaca['rain'] }} mm (3 jam)</li>
-                                            <li><strong>Waktu:</strong> {{ $cuaca['timestamp'] }}</li>
+                                            <li><strong>Waktu Saat Ini:</strong> {{ $cuaca['timestamp'] }}</li>
+                                            
                                         </ul>
                                     </div>
                                 </div>
 
                                 <hr>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                             <ul>
                                             @if(isset($waktu_tempuh))
-                                                <li><strong>Waktu Tempuh (Rute Utama):</strong> {{ $waktu_tempuh['jam'] }} jam {{ $waktu_tempuh['menit'] }} menit</li>
+                                                <li><strong>Estimasi Waktu Tempuh (Utama):</strong> {{ $waktu_tempuh['jam'] }} jam {{ $waktu_tempuh['menit'] }} menit</li>
                                             @endif
 
                                             @if(isset($waktu_tempuh_alt))
-                                                <li><strong>Waktu Tempuh (Alternatif):</strong> {{ $waktu_tempuh_alt['jam'] }} jam {{ $waktu_tempuh_alt['menit'] }} menit</li>
+                                                <li><strong>Estimasi Waktu Tempuh (Alternatif):</strong> {{ $waktu_tempuh_alt['jam'] }} jam {{ $waktu_tempuh_alt['menit'] }} menit</li>
                                             @endif
 
                                         </ul>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <ul>
                                             @if(isset($biaya_utama))
                                                 <li>
@@ -156,6 +157,9 @@
                                                 </li>
                                             @endif
                                         </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <li><strong>Estimasi Waktu Sampai:</strong> {{ $cuaca['estimasi_sampai'] }}</li>
                                     </div>
                                 </div>
                     
@@ -284,11 +288,15 @@
                     </div>
                     <div class="form-group">
                         <label>Jenis Pangan</label>
-                        <select name="jenis_pangan" class="form-control" required>
-                            <option value="">-- Pilih Jenis --</option>
-                            <option value="buah" {{ old('jenis_pangan', $jenis_pangan ?? '') == 'buah' ? 'selected' : '' }}>Buah</option>
-                            <option value="sayur" {{ old('jenis_pangan', $jenis_pangan ?? '') == 'sayur' ? 'selected' : '' }}>Sayur</option>
-                            <option value="beras" {{ old('jenis_pangan', $jenis_pangan ?? '') == 'beras' ? 'selected' : '' }}>Beras</option>
+                        <select class="form-control" name="jenis_pangan" required>
+                            <option value="">-- Pilih Jenis Pangan --</option>
+                            @foreach ($pangan as $item)
+                                <option value="{{ $item->nama_pangan }}" {{ old('jenis_pangan', $jenis_pangan ?? '') == $item->nama_pangan ? 'selected' : '' }}>
+                                    {{ $item->nama_pangan }}
+                                </option>
+                            @endforeach
+                            {{-- <option value="sayur" {{ old('jenis_pangan', $jenis_pangan ?? '') == 'sayur' ? 'selected' : '' }}>Sayur</option>
+                            <option value="beras" {{ old('jenis_pangan', $jenis_pangan ?? '') == 'beras' ? 'selected' : '' }}>Beras</option> --}}
                         </select>
                     </div>
                     <div class="form-group">

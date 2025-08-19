@@ -41,7 +41,7 @@
                     <div class="row justify-content-between mb-5">
                       <div class="col d-flex align-items-center mb-3 mb-md-0">
                         <span class="me-1">Show Data</span>
-                        <form method="GET" action="{{ route('Node') }}">
+                        <form method="GET" action="{{ route('kabupaten') }}">
                                   <select name="show_entries" class="form-control" onchange="this.form.submit()" style="width: auto;">
                                       <option value="10" {{ request()->get('show_entries') == 10 ? 'selected' : '' }}>10</option>
                                       <option value="25" {{ request()->get('show_entries') == 25 ? 'selected' : '' }}>25</option>

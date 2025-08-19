@@ -48,7 +48,7 @@
                         <div class="col-md-4 mb-5">
                           <form action="{{ route('Edge') }}" method="GET" >
                             <label for="Search">Cari Edge</label>
-                            <input type="text" class="form-control" name="search" id="search" placeholder="Cari Data Edge..." value="{{ request()->get('search', session('search_node')) }}" />
+                            <input type="text" class="form-control" name="search" id="search" placeholder="Cari Data Edge..." value="{{ request()->get('search', session('search_edge')) }}" />
                           </form>
                         </div>
                         

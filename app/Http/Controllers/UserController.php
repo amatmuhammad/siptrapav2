@@ -7,9 +7,10 @@ use App\Models\edges;
 use App\Models\nodes;
 use App\Models\pangan;
 use App\Helpers\MinHeap;
-use App\Models\kabupaten;
-use App\Models\namaPangan;
 use App\Models\produsen;
+use App\Models\kabupaten;
+use App\Models\GraphCache;
+use App\Models\namaPangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -25,8 +26,9 @@ class UserController extends Controller
         $data = kabupaten::count();
         $produsen = produsen::count();
         $nama_pangan = namaPangan::count();
+        $item = kabupaten::all();
 
-        return view('user.DashboardUser', compact('data','produsen','nama_pangan'));
+        return view('user.DashboardUser', compact('data','produsen','nama_pangan','item'));
     }
 
     //function pangan -> grafik pangan
@@ -78,9 +80,11 @@ class UserController extends Controller
                     ->orWhere('name', 'LIKE', '%Kabupaten%');
         })->orderBy('name','desc')->get();
 
+        $pangan = namaPangan::all();
+
         // dd($node);
 
-        return view('user.modeltrans',compact('node'));
+        return view('user.modeltrans',compact('node','pangan'));
     }
 
     public function RefreshGraph()
@@ -90,9 +94,6 @@ class UserController extends Controller
 
         return redirect()->route('Node')->with('success', 'Graph cache berhasil di-refresh!');
     }
-
-
-    //
 
     public function Cuaca(Request $request)
     {
@@ -150,72 +151,21 @@ class UserController extends Controller
         ]);
     }
 
-
-
+    //bidirectional a star with a star alternatif
     public function cariRute(Request $request)
     {
-        $jenisPangan = $request->input('jenis_pangan');
-        $volume = $request->input('volume');
-        $cuaca = $this->cekCuacaJikaBuah($request->end_node);
+        
 
-        if ($cuaca) {
-            $alertLevel = 'success'; // default: cuaca baik
-            $alertMessage = 'Cuaca baik dan aman untuk distribusi.';
-
-            if ($cuaca['rain'] > 5 || $cuaca['wind'] > 8) {
-                $alertLevel = 'danger';
-                $alertMessage = 'Cuaca buruk! Distribusi sebaiknya ditunda karena hujan lebat atau angin kencang.';
-            } elseif ($cuaca['rain'] > 2 || $cuaca['wind'] > 5) {
-                $alertLevel = 'warning';
-                $alertMessage = 'Cuaca kurang baik. Harap berhati-hati saat distribusi.';
-            }
-        }
-
-        $node = nodes::where(function ($query) {
+        $node = nodes::where(function($query) {
             $query->where('name', 'LIKE', '%Kota%')
-                ->orWhere('name', 'LIKE', '%Kabupaten%');
-        })->orderBy('name', 'desc')->get();
+                    ->orWhere('name', 'LIKE', '%Kabupaten%');
+        })->orderBy('name','desc')->get();
 
         $start = microtime(true);
 
         $source = $request->start_node;
         $target = $request->end_node;
 
-        // // Ambil nodes dan mapping id ke name sekaligus cache
-        // list($nodes, $idToName) = Cache::rememberForever('graph_coords_and_map', function () {
-        //     $allNodes = nodes::all();
-        //     $idToName = [];
-        //     $nodes = [];
-
-        //     foreach ($allNodes as $n) {
-        //         $idToName[$n->id] = $n->name;
-        //         $nodes[$n->name] = ['lat' => $n->latitude, 'lng' => $n->longitude];
-        //     }
-
-        //     return [$nodes, $idToName];
-        // });
-
-        // // Load edges dengan key berdasarkan nama node, bukan ID
-        // $originalGraph = Cache::rememberForever('graph_edges', function () use ($idToName) {
-        //     $edges = edges::all();
-        //     $g = [];
-
-        //     foreach ($edges as $e) {
-        //         $sourceName = $idToName[$e->source] ?? null;
-        //         $targetName = $idToName[$e->target] ?? null;
-
-        //         if ($sourceName && $targetName) {
-        //             $g[$sourceName][] = ['to' => $targetName, 'cost' => $e->distance];
-        //             $g[$targetName][] = ['to' => $sourceName, 'cost' => $e->distance];
-        //         }
-        //     }
-
-        //     return $g;
-        // });
-
-        // if (!isset($nodes[$source]) || !isset($nodes[$target])) {
-        //     return back()->with('error', 'Node tidak ditemukan.');
-        // }
         $nodes = Cache::rememberForever('graph_coords', function () {
             return nodes::all()->keyBy('name')->map(fn($n) => [
                 'lat' => $n->latitude,
@@ -236,6 +186,7 @@ class UserController extends Controller
         if (!isset($nodes[$source]) || !isset($nodes[$target])) {
             return back()->with('error', 'Node tidak ditemukan.');
         }
+        
 
         // --- 1. Rute Utama ---
         [$fullPath, $totalDistance] = $this->bidirectionalAStar($source, $target, $nodes, $originalGraph);
@@ -264,8 +215,8 @@ class UserController extends Controller
 
         $kecepatanKmh = 60;
 
-        $waktuTempuhJam = $totalDistance / $kecepatanKmh;
-        $waktuTempuhAlternatifJam = $altDistance / $kecepatanKmh;
+        $waktuTempuhJam = $totalDistance / $kecepatanKmh + 4;
+        $waktuTempuhAlternatifJam = $altDistance / $kecepatanKmh + 4;
 
         $waktuTempuhUtama = [
             'jam' => floor($waktuTempuhJam),
@@ -279,8 +230,30 @@ class UserController extends Controller
 
         $biayaUtama = $this->hitungBiayaDistribusi($totalDistance);
         $biayaAlternatif = $this->hitungBiayaDistribusi($altDistance);
+        
+        //section waktu dan alert
+        $pangan = namaPangan::all();
+        $jenisPangan = $request->jenis_pangan;
+        $volume = $request->input('volume');
+        $cuaca = $this->cekCuacaJikaBuah($request->end_node, $waktuTempuhUtama['jam'], $waktuTempuhUtama['menit']);
+
+        if ($cuaca) {
+            $alertLevel = 'success'; // default: cuaca baik
+            $alertMessage = 'Cuaca baik dan aman untuk distribusi.';
+
+            if ($cuaca['rain'] > 5 || $cuaca['wind'] > 8) {
+                $alertLevel = 'danger';
+                $alertMessage = 'Cuaca buruk! Distribusi sebaiknya ditunda karena hujan lebat atau angin kencang.';
+            } elseif ($cuaca['rain'] > 2 || $cuaca['wind'] > 5) {
+                $alertLevel = 'warning';
+                $alertMessage = 'Cuaca kurang baik. Harap berhati-hati saat distribusi.';
+            }
+        }
+
 
         $executionTime = microtime(true) - $start;
+
+        // dd("starnode : ".$source, "endnode : ".$target);
 
         return view('user.modeltrans', [
             'rute'              => $ruteUtama ?? [],
@@ -300,9 +273,12 @@ class UserController extends Controller
             'waktu_tempuh_alt'  => $waktuTempuhAlternatif ?? null,
             'biaya_utama'       => $biayaUtama ?? null,
             'biaya_alternatif'  => $biayaAlternatif ?? null,
+            'jenis_pangan'      => $jenisPangan ?? null,
+            'pangan'            => $pangan,
         ]);
-    }
 
+    }
+    
     private function hitungBiayaDistribusi($jarakKm)
     {
         if ($jarakKm <= 5) {
@@ -404,7 +380,8 @@ class UserController extends Controller
         return $coords;
     }
 
-    private function cekCuacaJikaBuah($endNode)
+
+    private function cekCuacaJikaBuah($endNode, $waktuTempuhJam = 0, $waktuTempuhMenit = 0 )
     {
         $node = nodes::where('name', $endNode)->first();
         if (!$node) {
@@ -423,6 +400,17 @@ class UserController extends Controller
             'lang'  => 'id'
         ]);
 
+        // Waktu sekarang
+        $waktuSekarang = Carbon::now('Asia/Makassar');
+
+        // Hitung estimasi waktu sampai
+        $estimasiSampai = $waktuSekarang
+            ->copy()
+            ->addHours($waktuTempuhJam)
+            ->addMinutes($waktuTempuhMenit)
+            ->locale('id')
+            ->translatedFormat('H:i, l d/m/Y');
+
         if ($response->successful()) {
             $data = $response->json();
 
@@ -432,7 +420,10 @@ class UserController extends Controller
                 'humidity' => $data['main']['humidity'],
                 'wind' => $data['wind']['speed'],
                 'rain' => $data['rain']['3h'] ?? 0,
-                'timestamp' => Carbon::now('Asia/Makassar')->format('H:i d/m/Y'),
+                'timestamp' => Carbon::now('Asia/Makassar')
+                    ->locale('id')
+                    ->translatedFormat('H:i, l d/m/Y'),
+                'estimasi_sampai' => $estimasiSampai,
             ];
         }
 
@@ -448,30 +439,5 @@ class UserController extends Controller
             'redirect' => route('Model') // Ini akan dikirim ke JS untuk redirect
         ]);
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
 
 }
