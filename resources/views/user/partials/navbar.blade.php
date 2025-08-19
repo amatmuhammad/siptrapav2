@@ -1,6 +1,6 @@
 <div class="container-fluid p-0">
         <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-lg-5">
-            <a href="index.html" class="navbar-brand ml-lg-3">
+            <a href="{{ route('Beranda') }}" class="navbar-brand ml-lg-3">
                 <h6 class="m-0 display-5 text-uppercase text-primary" ><img class="logo w-10 img-fluid py-2" src="{{ asset('assets2/img/LOGO.png') }}" style="width: 250px;"></img></h5>
             </a>
             <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
