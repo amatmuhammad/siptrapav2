@@ -86,7 +86,7 @@
                             </td>
                           <td>
                              <div>
-                                <button class="btn btn-warning mb-2" data-bs-toggle="modal" data-bs-target="#editKabupatenModal{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editKabupatenModal{{ $item->id }}"><i class="icon-base bx bx-edit-alt me-1"></i></button>
                                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $item->id }}"> <i class="icon-base bx bx-trash me-1"></i></button>
                             </div>                              
                           </td>
