@@ -114,15 +114,16 @@
                 <div class="bg-primary py-5 px-4 px-sm-5">
                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
-                            <div class="carousel-item active">
-                            <img src="{{ asset('assets2/images/muna.png') }}" class="d-block w-100" alt="...">
-                            </div>
-                            <div class="carousel-item">
-                            <img src="{{ asset('assets2/images/wakatobi.png') }}" class="d-block w-100" alt="...">
-                            </div>
-                            <div class="carousel-item">
-                            <img src="{{ asset('assets2/images/Baubau.png') }}" class="d-block w-100" alt="...">
-                            </div>
+                            @foreach ($item as $index => $img)                
+                                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                                    {{-- <img src="{{ asset('assets2/images/muna.png') }}" class="d-block w-100" alt="..."> --}}
+                                    @if($img->gambar)
+                                        <img src="{{ asset('images/' . $img->gambar) }}" class="d-block w-100"  alt="Gambar">
+                                    @else
+                                        Tidak ada gambar untuk ditampilkan
+                                    @endif
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
