@@ -214,7 +214,7 @@
 
                             {{-- Info jarak dan waktu --}}
                             <div class="route-info">
-                                <p><strong>Legenda Jalur (Jarak)</strong></p>
+                                <p><strong>Legenda Jalur</strong></p>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <div style="width: 30px; height: 5px; background-color: blue;"></div>
                                     <span>Rute Utama 
