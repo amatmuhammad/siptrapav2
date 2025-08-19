@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-
 use App\Models\edges;
 use App\Models\nodes;
 use App\Models\pangan;
@@ -95,7 +93,7 @@ class AdminController extends Controller
             'search' => $search
         ]);
 
-        return view('admin.Node', compact('strapa', 'showEntries', 'search'));
+        return view('admin.node', compact('strapa', 'showEntries', 'search'));
     }
 
     public function storeNode(Request $request)
